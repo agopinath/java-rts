@@ -2,13 +2,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+
+import com.agopinath.lthelogutil.Fl;
 
 
 public class Map {
@@ -25,7 +26,7 @@ public class Map {
 		try {
 			Scanner scan = new Scanner(mapFile);
 			if(!scan.hasNextLine()) {
-				System.out.println("Map file " + mapFile.getAbsolutePath() + " should have at least one line.");
+				Fl.err("Map file " + mapFile.getAbsolutePath() + " should have at least one line.");
 			}
 			int cols = scan.nextLine().replaceAll(" ", "").length(); // remove spaces and count length of map width
 			int rows = 1;
@@ -66,7 +67,7 @@ public class Map {
 	
 	private void assignAssets() {
 		for( int row = 0; row < mapArray.length; row++ ) {
-			System.out.println();
+			Fl.og("");
 			for( int col = 0; col < mapArray[row].length; col++ ) {
 				switch(mapArray[row][col].getType()) { // set the images of mapArray elements
 					case EARTH:
@@ -74,7 +75,7 @@ public class Map {
 						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random()*terrainImgs.size()))); 
 						break;
 					default:
-						System.out.println("No terrain of that type");
+						Fl.err("No terrain of that type");
 				}
 			}
 		}
@@ -88,11 +89,11 @@ public class Map {
 			try {
 				terrainImgs.add(ImageIO.read(f));
 			} catch (IOException e) {
-				System.out.println("Failed to load map assets at file: " + f.getAbsolutePath());
+				Fl.err("Failed to load map assets at file: " + f.getAbsolutePath());
 				e.printStackTrace();
 				continue;
 			}
-			System.out.println("Loaded: " + f.getName());
+			Fl.og("Loaded: " + f.getName());
 		}
 	}
 	
