@@ -66,13 +66,11 @@ public class Map {
 	}
 	
 	private void assignAssets() {
-		for( int row = 0; row < mapArray.length; row++ ) {
-			Fl.og("");
-			for( int col = 0; col < mapArray[row].length; col++ ) {
-				switch(mapArray[row][col].getType()) { // set the images of mapArray elements
+		for (int row = 0; row < mapArray.length; row++) {
+			for (int col = 0; col < mapArray[row].length; col++) {
+				switch (mapArray[row][col].getType()) { // set the images of mapArray elements
 					case EARTH:
-						System.out.print("0 ");
-						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random()*terrainImgs.size()))); 
+						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random() * terrainImgs.size())));
 						break;
 					default:
 						Fl.err("No terrain of that type");
@@ -95,9 +93,21 @@ public class Map {
 			}
 			Fl.og("Loaded: " + f.getName());
 		}
+		
+		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the Terrain Img_height/width field, because it remains constant
+		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);
+		
+		System.out.println(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
 	public void draw(Graphics2D g) {
-		
+		for(int row = 0; row < mapArray.length; row++) {
+			for(int col = 0; col < mapArray[row].length; col++) {
+				int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
+				int y = (col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
+				int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
+				mapArray[row][col].draw(g, x+hOff/4, y);
+			}
+		}
 	}
 }

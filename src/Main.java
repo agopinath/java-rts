@@ -14,7 +14,7 @@ public class Main {
 		frame.add(gamePanel);
 		frame.addKeyListener(gamePanel);
 		
-		frame.setSize(1000, 750);
+		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
