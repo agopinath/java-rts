@@ -1,16 +1,18 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements KeyListener {
-	private boolean moving = false;
+	private Map map;
+	//private boolean moving = false;
 	
 	public GamePanel() {
+		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/"));
 		addKeyListener(this);
 		
 		Thread gameLoop = new Thread(new GameLoop());
@@ -71,37 +73,39 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 		
 		private void updateGame() {
-			if(moving) {
+			/*if(moving) {
 				r.x++;
 				r.y++;
-			}
+			}*/
 		}
 	}
 	
 	private Rectangle r = new Rectangle(50, 50);
 	public void paintComponent(Graphics gr) {
+		super.paintComponent(gr);
+		
 		Graphics2D g = (Graphics2D) gr;
 		drawMap(g);
 		drawEntities(g);
 	}
 	
 	private void drawMap(Graphics2D g) {
-		
+		map.draw(g);
 	}
 	
 	private void drawEntities(Graphics2D g) {
-		g.clearRect(0, 0, getWidth(), getHeight());
-		g.fill(r);
+		//g.clearRect(0, 0, getWidth(), getHeight());
+		//g.fill(r);
 	}
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		moving = true;
+		//moving = true;
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		moving = false;
+		//moving = false;
 	}
 
 	@Override
