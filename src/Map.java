@@ -103,10 +103,12 @@ public class Map {
 	public void draw(Graphics2D g) {
 		for(int row = 0; row < mapArray.length; row++) {
 			for(int col = 0; col < mapArray[row].length; col++) {
-				int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
-				int y = (col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
-				int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
-				mapArray[row][col].draw(g, x+hOff/4, y);
+				//int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
+				//int y =(col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
+				//int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
+				int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
+				int y = (row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row) : row*Terrain.IMG_HEIGHT;//(row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2);
+				mapArray[row][col].draw(g, x, y);
 			}
 		}
 	}
