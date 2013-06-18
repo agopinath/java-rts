@@ -8,6 +8,8 @@ import java.io.File;
 
 import javax.swing.JPanel;
 
+import com.agopinath.lthelogutil.Fl;
+
 public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	private Map map;
 	
@@ -101,7 +103,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+		int[] rowcol = Map.screenToMap(e.getX(), e.getY(), map);
+		Fl.og(rowcol[0] + " " + rowcol[1]);
 	}
 	
 	@Override

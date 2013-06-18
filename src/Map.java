@@ -130,13 +130,16 @@ public class Map {
 		return mapArray[row][col];
 	}
 	
-	public static int[] screenToMap(int mouseX, int mouseY, Map terrainMap) {
+	public static int[] screenToMap(int x, int y, Map terrainMap) {
+		int row = y / Terrain.IMG_HEIGHT;
+		int col = x / Terrain.IMG_WIDTH;
 		
-		return null;
+		return new int[] {row, col};
 	}
 	
 	public static int[] mapToScreen(int row, int col, Map terrainMap) {
-		return null;
+		Terrain t = terrainMap.mapArray[row][col];
+		return new int[] {t.getX(), t.getY()};
 	}
 
 	public int getHeight() {
