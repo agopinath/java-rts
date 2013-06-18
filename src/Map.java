@@ -13,7 +13,7 @@ import com.agopinath.lthelogutil.Fl;
 
 
 public class Map {
-	private Terrain[][] mapArray;
+	public Terrain[][] mapArray;
 	private List<Image> terrainImgs;
 	
 	public Map(File mapFile, File assetsDir) {
@@ -107,7 +107,7 @@ public class Map {
 				//int y =(col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
 				//int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
 				int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
-				int y = (row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row) : row*Terrain.IMG_HEIGHT;//(row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2);
+				int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);//(row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2);
 				mapArray[row][col].draw(g, x, y);
 			}
 		}
