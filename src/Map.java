@@ -18,7 +18,7 @@ import com.agopinath.lthelogutil.Fl;
 public class Map {
 	private Terrain[][] mapArray;
 	private List<Image> terrainImgs;
-	private static Polygon topL, topR, botL, botR;
+	private static Polygon topL, topR, botL, botR; // used to convert screen coords into map row/col
 	
 	public Map(File mapFile, File assetsDir) {
 		loadMapArray(mapFile);
@@ -81,6 +81,13 @@ public class Map {
 				}
 			}
 		}
+		
+		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the 
+		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);   // Terrain Img_height/width field, because it remains constant
+		
+		initPolygons(); // initialize Polygons with new Terrain img height/width
+		
+		System.out.println(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
 	private void loadAssets(File assetsDir) {
@@ -97,13 +104,6 @@ public class Map {
 			}
 			Fl.og("Loaded: " + f.getName());
 		}
-		
-		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the Terrain Img_height/width field, because it remains constant
-		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);
-		
-		initPolygons();
-		
-		System.out.println(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
 	public void draw(Graphics2D g) {
@@ -169,5 +169,12 @@ public class Map {
 		row = regionY + regionDY - 4; // weird hack to properly convert coords to rowcol, need to fix later
 
 		return new int[] {row, col};
+	}
+	
+	public static int[] mapToScreen(int row, int col, Map terrainMap) {
+		int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
+		int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);
+		
+		return new int[] {x+Terrain.IMG_WIDTH/2, y+Terrain.IMG_HEIGHT}; // translate x and y to center of tile
 	}
 }
