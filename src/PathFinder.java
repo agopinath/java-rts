@@ -57,11 +57,6 @@ public class PathFinder {
 		while(!openList.isEmpty()) {
 			lastNode = current;
 			current = openList.peek();
-			/*for(TerrainNode t: openList) {
-				if(Settings.DEBUG_MODE)
-					t.baseBlock.terrColor = Color.LIGHT_GRAY;
-			}*/
-			//GameUtil.changeBright(current.baseBlock, map, 2f);
 			
 			if(current.equals(goalNode)) {
                 System.out.println("END: " + (System.currentTimeMillis() - startTime));
@@ -71,18 +66,10 @@ public class PathFinder {
 			
 			openList.remove(current);		
 			closedList.add(current);
-			Terrain[] surroundings = GameUtil.calcSurroundings(
-										new int[] {current.baseBlock.getRow(), current.baseBlock.getCol()}, map);
+			Terrain[] surroundings = GameUtil.calcSurroundings(new int[] {current.baseBlock.getRow(), current.baseBlock.getCol()}, map);
 			TerrainNode neighbor = null;
 			
 			for(Terrain curr : surroundings) {
-				/*GameUtil.changeBright(curr, map, 2f);
-				refresh();
-				try {
-					Thread.sleep(5);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}*/
 				neighbor = new TerrainNode(curr);
 				if(closedList.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
 				

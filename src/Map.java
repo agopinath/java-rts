@@ -18,7 +18,6 @@ import com.agopinath.lthelogutil.Fl;
 public class Map {
 	private Terrain[][] mapArray;
 	private List<Image> terrainImgs;
-	private static Polygon topL, topR, botL, botR; // used to convert screen coords into map row/col
 	
 	public Map(File mapFile, File assetsDir) {
 		loadMapArray(mapFile);
@@ -85,15 +84,10 @@ public class Map {
 		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the 
 		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);   // Terrain Img_height/width field, because it remains constant
 		
-		initPolygons(); // initialize Polygons with new Terrain img height/width
-		
 		for(int row = 0; row < mapArray.length; row++) {
 			for(int col = 0; col < mapArray[row].length; col++) {
-				//int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
-				//int y =(col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
-				//int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
-				int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
-				int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);
+				int x = col * Terrain.IMG_WIDTH;
+				int y = row * Terrain.IMG_HEIGHT;
 				mapArray[row][col].setX(x);
 				mapArray[row][col].setY(y);
 			}
@@ -130,59 +124,12 @@ public class Map {
 		return mapArray[row][col];
 	}
 	
-	public void initPolygons() {
-		topL = new Polygon(new int[] { 0, Terrain.IMG_WIDTH / 2, 0 },
-				new int[] { 0, 0, Terrain.IMG_HEIGHT / 2 }, 3);
-		topR = new Polygon(new int[] { Terrain.IMG_WIDTH / 2, Terrain.IMG_WIDTH, Terrain.IMG_WIDTH }, 
-				new int[] { 0, Terrain.IMG_HEIGHT / 2, 0 }, 3);
-		botL = new Polygon(new int[] { 0, Terrain.IMG_WIDTH / 2, 0 },
-				new int[] { Terrain.IMG_HEIGHT / 2, Terrain.IMG_HEIGHT,Terrain.IMG_HEIGHT }, 3);
-		botR = new Polygon(new int[] { Terrain.IMG_WIDTH / 2,Terrain.IMG_WIDTH, Terrain.IMG_WIDTH },
-				new int[] { Terrain.IMG_HEIGHT, Terrain.IMG_HEIGHT / 2,Terrain.IMG_HEIGHT }, 3);
-	}
-	
 	public static int[] screenToMap(int mouseX, int mouseY, Map terrainMap) {
-		int row = -1;
-		int col = -1;
-
-		int regionX = (int) (mouseX / Terrain.IMG_WIDTH);
-		int regionY = (int) (mouseY * 2 / Terrain.IMG_HEIGHT);
-
-		int mouseMapX = mouseX % Terrain.IMG_WIDTH;
-		int mouseMapY = mouseY % Terrain.IMG_HEIGHT;
-
-		int regionDX = 0;
-		int regionDY = 0;
-
-		if (topL.contains(mouseMapX, mouseMapY)) {
-			//Fl.og("topL");
-			regionDX = -1;
-			regionDY = -1;
-		} else if (topR.contains(mouseMapX, mouseMapY)) {
-			//Fl.og("topR");
-			regionDX = 0;
-			regionDY = -1;
-		} else if (botL.contains(mouseMapX, mouseMapY)) {
-			//Fl.og("botL");
-			regionDX = -1;
-			regionDY = 1;
-		} else if (botR.contains(mouseMapX, mouseMapY)) {
-			//Fl.og("botR");
-			regionDX = 0;
-			regionDY = 1;
-		}
-
-		col = regionX + regionDX;
-		row = regionY + regionDY - 4; // weird hack to properly convert coords to rowcol, need to fix later
-
-		return new int[] {row, col};
+		return null;
 	}
 	
 	public static int[] mapToScreen(int row, int col, Map terrainMap) {
-		int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
-		int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);
-		
-		return new int[] {x+Terrain.IMG_WIDTH/2, y+Terrain.IMG_HEIGHT}; // translate x and y to center of tile
+		return null;
 	}
 
 	public int getHeight() {

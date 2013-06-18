@@ -1,5 +1,3 @@
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -7,18 +5,14 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import com.agopinath.lthelogutil.Fl;
-
 public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	private Map map;
-	private int[] start, dest;
 	
 	public GamePanel() {
-		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/"));
+		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/grass/"));
 		addKeyListener(this);
 		
 		Thread gameLoop = new Thread(new GameLoop());
@@ -96,18 +90,6 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	}
 	
 	private void drawEntities(Graphics2D g) {
-	Font font = new Font("Arial", Font.PLAIN, 8);
-	for(int row = 0; row < 100; row++) {
-			for(int col = 0; col < 25; col++) {
-				Terrain t = map.getTerrainAt(row, col);
-				int[] coords = GameUtil.squarify(row, t.getX(), t.getY());
-				
-				g.setColor(Color.red);
-				//g.fillRect(coords[0], coords[1], 2, 2);
-				g.setFont(font);
-				g.drawString(""+(col), (coords[0]), (coords[1]));
-			}
-		}
 	}
 	
 	@Override
@@ -119,39 +101,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
-		int[] rowcol = Map.screenToMap(e.getX(), e.getY(), map);
-		int row = rowcol[0];
-		int col = rowcol[1];
 		
-		if(e.getButton() == MouseEvent.BUTTON1) {
-			start = rowcol;
-			if (row > 0 && col > 0) {
-				GameUtil.changeBright(map.getTerrainAt(row, col), map, 1.4f);
-			}
-		} else if(e.getButton() == MouseEvent.BUTTON3) {
-			dest = rowcol;
-			if (row > 0 && col > 0) {
-				GameUtil.changeBright(map.getTerrainAt(row, col), map, 0f);
-				paintImmediately(0, 0, getWidth(), getHeight());
-			}
-			
-			if(start != null) {
-				PathFinder finder = new PathFinder(this);
-				ArrayList<Terrain> path = 
-						finder.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
-				//Terrain[] path = GameUtil.calcSurroundings(new int[] {row, col}, map);
-				
-				for(Terrain t : path) {
-					GameUtil.changeBright(t, map, 2f);
-					Fl.og("[" + t.getX() + ", " + t.getY() + "]");
-				}
-				
-				paintImmediately(0, 0, getWidth(), getHeight());
-			}
-		}
-		
-		Fl.og("Map Row/col: [" + rowcol[0] + ", " + rowcol[1] + "]");
 	}
 	
 	@Override

@@ -20,7 +20,7 @@ public class Terrain {
 	}
 
 	public void draw(Graphics2D g) {
-		g.drawImage(img, x, y, 32, 16, null);
+		g.drawImage(img, x, y, null);
 	}
 
 	public Image getImage() {

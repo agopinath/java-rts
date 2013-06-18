@@ -31,44 +31,15 @@ public class GameUtil {
 	    }
 	}
 	
-	/*public static float pathFinderHeuristic(Terrain start, Terrain dest) {
-		float straightDist, dist;
-		dist = 0.0f;
-		int startX = start.getX();
-		int startY = start.getY();
-		int destX = dest.getX();
-		int destY = dest.getY();
-		
-		return (float) Math.sqrt((destX - startX) * (destX - startX) + (destY - startY) * (destY - startY));
-	}*/
-	
 	public static float pathFinderHeuristic(TerrainNode start, TerrainNode dest) {
-		float dx, dy;//, diagDist, straightDist, horizDist, vertDist, dist;
+		float dx, dy;
 		final float latCost = 10.0f;
 		final float diagCost = 14.1f;
-		//float HtoVratio = Terrain.IMG_WIDTH/Terrain.IMG_HEIGHT;
 		
 		dx = Math.abs(start.x - dest.x);
 		dy = Math.abs(start.y - dest.y);
-		//diagDist = horizDist = vertDist = straightDist = dist = 0.0f;
-		
-		//horizDist = dx * HtoVratio;
-		//vertDist =  dy * (1/HtoVratio);
-
-		//straightDist = horizDist + vertDist;
-		//dist = 1.41f * diagDist + 1.00f * (straightDist - 2.0f*diagDist);
 		
 		return latCost * (dx + dy) + (diagCost - 2f*latCost) * Math.min(dx, dy);
-	}
-	
-	public static int[] squarify(int row, int mapX, int mapY) {
-		int squareX = (row % 2 == 0) ? mapX - (Terrain.IMG_WIDTH/2) : mapX;
-		int squareY = mapY + row*(Terrain.IMG_HEIGHT/2);
-		
-		squareX += Terrain.IMG_WIDTH/2;
-		squareY += Terrain.IMG_HEIGHT/2;
-		
-		return new int[] {squareX, squareY};
 	}
 	
 	public static Terrain[] calcSurroundings(int[] rowAndCol, Map map) {

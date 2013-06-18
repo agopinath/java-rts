@@ -6,9 +6,8 @@ public class TerrainNode implements Comparable<TerrainNode> {
 	
 	public TerrainNode(Terrain block) {
 		this.baseBlock = block;
-		int[] convRowCol = GameUtil.squarify(block.getRow(), block.getX() + Terrain.IMG_WIDTH/2, block.getY() + Terrain.IMG_HEIGHT/2);
-		x = convRowCol[0];
-		y = convRowCol[1];
+		x = block.getX() + Terrain.IMG_WIDTH/2;
+		y = block.getY() + Terrain.IMG_HEIGHT/2;
 	}
 	
 	public boolean equals(Object other) {
