@@ -1,5 +1,8 @@
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Polygon;
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,8 +16,9 @@ import com.agopinath.lthelogutil.Fl;
 
 
 public class Map {
-	public Terrain[][] mapArray;
+	private Terrain[][] mapArray;
 	private List<Image> terrainImgs;
+	private static Polygon topL, topR, botL, botR;
 	
 	public Map(File mapFile, File assetsDir) {
 		loadMapArray(mapFile);
@@ -97,6 +101,8 @@ public class Map {
 		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the Terrain Img_height/width field, because it remains constant
 		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);
 		
+		initPolygons();
+		
 		System.out.println(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
@@ -111,5 +117,57 @@ public class Map {
 				mapArray[row][col].draw(g, x, y);
 			}
 		}
+	}
+	
+	public Terrain getTerrainAt(int row, int col) {
+		return mapArray[row][col];
+	}
+	
+	public void initPolygons() {
+		topL = new Polygon(new int[] { 0, Terrain.IMG_WIDTH / 2, 0 },
+				new int[] { 0, 0, Terrain.IMG_HEIGHT / 2 }, 3);
+		topR = new Polygon(new int[] { Terrain.IMG_WIDTH / 2, Terrain.IMG_WIDTH, Terrain.IMG_WIDTH }, 
+				new int[] { 0, Terrain.IMG_HEIGHT / 2, 0 }, 3);
+		botL = new Polygon(new int[] { 0, Terrain.IMG_WIDTH / 2, 0 },
+				new int[] { Terrain.IMG_HEIGHT / 2, Terrain.IMG_HEIGHT,Terrain.IMG_HEIGHT }, 3);
+		botR = new Polygon(new int[] { Terrain.IMG_WIDTH / 2,Terrain.IMG_WIDTH, Terrain.IMG_WIDTH },
+				new int[] { Terrain.IMG_HEIGHT, Terrain.IMG_HEIGHT / 2,Terrain.IMG_HEIGHT }, 3);
+	}
+	
+	public static int[] screenToMap(int mouseX, int mouseY, Map terrainMap) {
+		int row = -1;
+		int col = -1;
+
+		int regionX = (int) (mouseX / Terrain.IMG_WIDTH);
+		int regionY = (int) (mouseY * 2 / Terrain.IMG_HEIGHT);
+
+		int mouseMapX = mouseX % Terrain.IMG_WIDTH;
+		int mouseMapY = mouseY % Terrain.IMG_HEIGHT;
+
+		int regionDX = 0;
+		int regionDY = 0;
+
+		if (topL.contains(mouseMapX, mouseMapY)) {
+			//Fl.og("topL");
+			regionDX = -1;
+			regionDY = -1;
+		} else if (topR.contains(mouseMapX, mouseMapY)) {
+			//Fl.og("topR");
+			regionDX = 0;
+			regionDY = -1;
+		} else if (botL.contains(mouseMapX, mouseMapY)) {
+			//Fl.og("botL");
+			regionDX = -1;
+			regionDY = 1;
+		} else if (botR.contains(mouseMapX, mouseMapY)) {
+			//Fl.og("botR");
+			regionDX = 0;
+			regionDY = 1;
+		}
+
+		col = regionX + regionDX;
+		row = regionY + regionDY - 4; // weird hack to properly convert coords to rowcol, need to fix later
+
+		return new int[] {row, col};
 	}
 }
