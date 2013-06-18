@@ -49,10 +49,13 @@ public class Map {
 				if(block != ' ') {
 					switch(block) { // initialize Terrain elems based on map character values
 						case 0:
-							mapArray[row][col] = new Terrain(row, col, TerrainType.EARTH, null); 
+							mapArray[row][col] = new Terrain(row, col, TerrainType.GRASS, null); 
+							break;
+						case 1:
+							mapArray[row][col] = new Terrain(row, col, TerrainType.DIRT, null); 
 							break;
 						default:
-							mapArray[row][col] = new Terrain(row, col, TerrainType.OTHER, null); 
+							Fl.err("...terrain type is messed up?");
 					}
 					col++;
 				}
@@ -72,7 +75,10 @@ public class Map {
 		for (int row = 0; row < mapArray.length; row++) {
 			for (int col = 0; col < mapArray[row].length; col++) {
 				switch (mapArray[row][col].getType()) { // set the images of mapArray elements
-					case EARTH:
+					case GRASS:
+						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random() * terrainImgs.size())));
+						break;
+					case DIRT:
 						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random() * terrainImgs.size())));
 						break;
 					default:
@@ -125,6 +131,7 @@ public class Map {
 	}
 	
 	public static int[] screenToMap(int mouseX, int mouseY, Map terrainMap) {
+		
 		return null;
 	}
 	

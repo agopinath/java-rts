@@ -1,4 +1,4 @@
 
 public enum TerrainType {
-	EARTH, OTHER
+	GRASS, DIRT
 }
