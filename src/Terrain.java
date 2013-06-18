@@ -8,13 +8,18 @@ public class Terrain {
 	
 	private Image img;
 	private TerrainType type;
+	private int x, y;
+	private int row;
+	private int col;
 	
-	public Terrain(TerrainType type, Image img) {
+	public Terrain(int row, int col, TerrainType type, Image img) {
+		this.row = row;
+		this.col = col;
 		this.type = type;
 		this.img = img;
 	}
-	
-	public void draw(Graphics2D g, int x, int y) {
+
+	public void draw(Graphics2D g) {
 		g.drawImage(img, x, y, 32, 16, null);
 	}
 
@@ -32,5 +37,37 @@ public class Terrain {
 
 	public void setType(TerrainType type) {
 		this.type = type;
+	}
+	
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+	
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public void setCol(int col) {
+		this.col = col;
 	}
 }

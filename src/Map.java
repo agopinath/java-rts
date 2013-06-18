@@ -50,10 +50,10 @@ public class Map {
 				if(block != ' ') {
 					switch(block) { // initialize Terrain elems based on map character values
 						case 0:
-							mapArray[row][col] = new Terrain(TerrainType.EARTH, null); 
+							mapArray[row][col] = new Terrain(row, col, TerrainType.EARTH, null); 
 							break;
 						default:
-							mapArray[row][col] = new Terrain(TerrainType.OTHER, null); 
+							mapArray[row][col] = new Terrain(row, col, TerrainType.OTHER, null); 
 					}
 					col++;
 				}
@@ -87,7 +87,19 @@ public class Map {
 		
 		initPolygons(); // initialize Polygons with new Terrain img height/width
 		
-		System.out.println(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
+		for(int row = 0; row < mapArray.length; row++) {
+			for(int col = 0; col < mapArray[row].length; col++) {
+				//int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
+				//int y =(col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
+				//int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
+				int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
+				int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);
+				mapArray[row][col].setX(x);
+				mapArray[row][col].setY(y);
+			}
+		}
+		
+		Fl.og(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
 	private void loadAssets(File assetsDir) {
@@ -109,12 +121,7 @@ public class Map {
 	public void draw(Graphics2D g) {
 		for(int row = 0; row < mapArray.length; row++) {
 			for(int col = 0; col < mapArray[row].length; col++) {
-				//int x = (col * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32 - (row * Terrain.IMG_HEIGHT * Terrain.IMG_WIDTH)/32;
-				//int y =(col * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32 + (row * Terrain.IMG_HEIGHT * Terrain.IMG_HEIGHT)/32;
-				//int hOff = (mapArray.length-1) * (Terrain.IMG_WIDTH/2);
-				int x = (row % 2 == 0) ? col*Terrain.IMG_WIDTH + (Terrain.IMG_WIDTH/2) : col*Terrain.IMG_WIDTH;
-				int y = row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2*row);//(row > 0) ? row*Terrain.IMG_HEIGHT - (Terrain.IMG_HEIGHT/2);
-				mapArray[row][col].draw(g, x, y);
+				mapArray[row][col].draw(g);
 			}
 		}
 	}
@@ -177,4 +184,13 @@ public class Map {
 		
 		return new int[] {x+Terrain.IMG_WIDTH/2, y+Terrain.IMG_HEIGHT}; // translate x and y to center of tile
 	}
+
+	public int getHeight() {
+		return mapArray.length;
+	}
+	
+	public int getWidth() {
+		return mapArray[0].length;
+	}
+
 }
