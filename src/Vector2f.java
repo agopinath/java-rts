@@ -21,6 +21,18 @@ public class Vector2f {
 		y = v.y;
 	}
 	
+	public float dot(Vector2f other) {
+		return (this.x * other.x + this.y * other.y);
+	}
+	
+	public Vector2f add(Vector2f other) {
+		return Vmath.add(this, other);
+	}
+	
+	public Vector2f sub(Vector2f other) {
+		return Vmath.sub(this, other);
+	}
+	
 	public void mult(float scale) {
 		Vector2f v = Vmath.mult(this, scale);
 		x = v.x;
