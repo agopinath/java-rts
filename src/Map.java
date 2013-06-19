@@ -127,6 +127,9 @@ public class Map {
 	}
 	
 	public Terrain getTerrainAt(int row, int col) {
+		if(row < 0 || col < 0 || row > mapArray.length || col > mapArray.length)
+			return null;
+		
 		return mapArray[row][col];
 	}
 	

@@ -76,6 +76,8 @@ public class PathFinder {
 			int idx = 0;
 			float moveCostToNeighbor;
 			for(Terrain curr : surroundings) {
+				if(curr == null) continue;
+				
 				neighbor = new TerrainNode(curr);
 				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
 					

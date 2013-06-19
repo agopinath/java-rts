@@ -126,7 +126,6 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 			ArrayList<Terrain> p = path.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
 			for(Terrain t : p) {
 				GameUtil.changeBright(t, map, 1.4f);
-				//Fl.og("[" + t.getRow() + ", " + t.getCol() + "]");
 			}
 			this.paintImmediately(0, 0, getWidth(), getHeight());
 		}	
