@@ -18,9 +18,13 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(800, 600));
-		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/grass/"));
 		addKeyListener(this);
 		addMouseListener(this);
+		
+		File[] mapAssets = new File[] {
+			new File("assets/tiles/grass/"), new File("assets/tiles/dirt/")
+		};
+		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
@@ -33,7 +37,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	private class GameLoop implements Runnable {
 		private boolean gameRunning = true;
 		private boolean gamePaused = false;
-		private static final float GAME_FPS = 30f;
+		private static final float GAME_FPS = 90f;
 		private static final float TIME_BETWEEN_UPDATES = 1000000000 / GAME_FPS;
 		private static final int MAX_UPDATES_BEFORE_RENDER = 1;
 		private static final float TARGET_FPS = 60;

@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -18,9 +17,9 @@ public class Map {
 	private Terrain[][] mapArray;
 	private Dimension viewport;
 	private int topLRow, topLCol, botRRow, botRCol;
-	private List<Image> terrainImgs;
+	private List<List<Image>> terrainImgs;
 		
-	public Map(File mapFile, File assetsDir) {
+	public Map(File mapFile, File[] assetsDir) {
 		loadMapArray(mapFile);
 		loadAssets(assetsDir);
 		assignAssets();
@@ -77,10 +76,10 @@ public class Map {
 			for (int col = 0; col < mapArray[row].length; col++) {
 				switch (mapArray[row][col].getType()) { // set the images of mapArray elements
 					case GRASS:
-						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random() * terrainImgs.size())));
+						mapArray[row][col].setImage(terrainImgs.get(0).get((int) (Math.random() * terrainImgs.size())));
 						break;
 					case DIRT:
-						mapArray[row][col].setImage(terrainImgs.get((int) (Math.random() * terrainImgs.size())));
+						mapArray[row][col].setImage(terrainImgs.get(1).get((int) (Math.random() * terrainImgs.size())));
 						break;
 					default:
 						Fl.err("No terrain of that type");
@@ -88,8 +87,8 @@ public class Map {
 			}
 		}
 		
-		Terrain.IMG_HEIGHT = terrainImgs.get(0).getHeight(null); // choose the first image arbitrarily to set as the 
-		Terrain.IMG_WIDTH = terrainImgs.get(0).getWidth(null);   // Terrain Img_height/width field, because it remains constant
+		Terrain.IMG_HEIGHT = terrainImgs.get(0).get(0).getHeight(null); // choose the first image arbitrarily to set as the 
+		Terrain.IMG_WIDTH = terrainImgs.get(0).get(0).getWidth(null);   // Terrain Img_height/width field, because it remains constant
 		
 		for(int row = 0; row < mapArray.length; row++) {
 			for(int col = 0; col < mapArray[row].length; col++) {
@@ -103,19 +102,25 @@ public class Map {
 		Fl.og(Terrain.IMG_WIDTH + " " + Terrain.IMG_HEIGHT);
 	}
 	
-	private void loadAssets(File assetsDir) {
-		terrainImgs = new ArrayList<Image>();
+	private void loadAssets(File[] assetsDirs) {
+		terrainImgs = new ArrayList<List<Image>>(10);
 		
-		File[] assets = assetsDir.listFiles();
-		for(File f : assets) {
-			try {
-				terrainImgs.add(ImageIO.read(f));
-			} catch (IOException e) {
-				Fl.err("Failed to load map assets at file: " + f.getAbsolutePath());
-				e.printStackTrace();
-				continue;
+		int idx = 0;
+		for(File tileDir : assetsDirs) {
+			File[] assets = tileDir.listFiles();
+			terrainImgs.add(new ArrayList<Image>());
+			for(File f : assets) {
+				try {
+					terrainImgs.get(idx).add(ImageIO.read(f));
+				} catch (IOException e) {
+					Fl.err("Failed to load map assets at file: " + f.getAbsolutePath());
+					e.printStackTrace();
+					continue;
+				}
+				Fl.og("Loaded: " + f.getName());
 			}
-			Fl.og("Loaded: " + f.getName());
+			
+			idx++;
 		}
 	}
 	
