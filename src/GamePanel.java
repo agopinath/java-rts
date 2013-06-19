@@ -122,6 +122,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 			start = rowcol;
 		} else if(e.getButton() == MouseEvent.BUTTON3 && start != null) {
 			dest = rowcol;
+			GameUtil.changeBright(map.getTerrainAt(start[0], start[1]), map, 1.4f);
 			PathFinder path = new PathFinder(this);
 			ArrayList<Terrain> p = path.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
 			for(Terrain t : p) {

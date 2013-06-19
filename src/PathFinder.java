@@ -56,14 +56,11 @@ public class PathFinder {
 		TerrainNode lastNode = null;
 		TerrainNode current = startNode;
 		
-		GameUtil.changeBright(start, map, 1.4f);
-		
 		while(!openSet.isEmpty()) {
 			lastNode = current;
 			current = openSet.peek();
 			
 			if(current.equals(goalNode)) {
-                System.out.println("END: " + (System.currentTimeMillis() - startTime));
 				cameFrom.put(goalNode, lastNode);
 				return reconstructPath(cameFrom, goalNode);
 			}
