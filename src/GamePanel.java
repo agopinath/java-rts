@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -5,6 +6,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -16,6 +18,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	public GamePanel() {
 		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/grass/"));
 		addKeyListener(this);
+		addMouseListener(this);
 		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
@@ -92,6 +95,14 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	}
 	
 	private void drawEntities(Graphics2D g) {
+		g.setColor(Color.red);
+		for(int row = 0; row < map.getHeight(); row++) {
+			g.drawLine(0, row*Terrain.IMG_HEIGHT, getWidth(), row*Terrain.IMG_HEIGHT);
+		}
+		
+		for(int col = 0; col < map.getHeight(); col++) {
+			g.drawLine(col*Terrain.IMG_WIDTH, 0, col*Terrain.IMG_WIDTH, getHeight());
+		}
 	}
 	
 	@Override
@@ -101,10 +112,24 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	@Override
 	public void keyTyped(KeyEvent e) {}
 
+	int[] start, dest;
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int[] rowcol = Map.screenToMap(e.getX(), e.getY(), map);
 		Fl.og(rowcol[0] + " " + rowcol[1]);
+		
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			start = rowcol;
+		} else if(e.getButton() == MouseEvent.BUTTON3 && start != null) {
+			dest = rowcol;
+			PathFinder path = new PathFinder(this);
+			ArrayList<Terrain> p = path.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
+			for(Terrain t : p) {
+				GameUtil.changeBright(t, map, 1.4f);
+				//Fl.og("[" + t.getRow() + ", " + t.getCol() + "]");
+			}
+			this.paintImmediately(0, 0, getWidth(), getHeight());
+		}	
 	}
 	
 	@Override

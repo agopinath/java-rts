@@ -4,6 +4,9 @@ import java.awt.image.RescaleOp;
 
 
 public class GameUtil {
+	private final static float LATERAL_COST = 10.00f;
+	private final static float DIAGONAL_COST = 14.14f;
+	
 	public static BufferedImage deepCopy(BufferedImage img) {
 		 ColorModel cm = img.getColorModel();
 		 return new BufferedImage(cm, img.copyData(null), cm.isAlphaPremultiplied(), null);
@@ -32,14 +35,10 @@ public class GameUtil {
 	}
 	
 	public static float pathFinderHeuristic(TerrainNode start, TerrainNode dest) {
-		float dx, dy;
-		final float latCost = 10.0f;
-		final float diagCost = 14.1f;
+		float dx = Math.abs(start.x - dest.x);
+		float dy = Math.abs(start.y - dest.y);
 		
-		dx = Math.abs(start.x - dest.x);
-		dy = Math.abs(start.y - dest.y);
-		
-		return latCost * (dx + dy) + (diagCost - 2f*latCost) * Math.min(dx, dy);
+		return LATERAL_COST * (dx + dy) + (DIAGONAL_COST - 2f*LATERAL_COST) * Math.min(dx, dy);
 	}
 	
 	public static Terrain[] calcSurroundings(int[] rowAndCol, Map map) {
@@ -59,7 +58,7 @@ public class GameUtil {
 		surround[2][1] = map.getTerrainAt(cenRow+1, cenCol);
 		surround[2][2] = map.getTerrainAt(cenRow+1, cenCol+1);*/
 
-		surround[0] = map.getTerrainAt(cenRow, cenCol-1);
+		surround[0] = map.getTerrainAt(cenRow-1, cenCol-1);
 		surround[1] = map.getTerrainAt(cenRow-1, cenCol);
 		surround[2] = map.getTerrainAt(cenRow-1, cenCol+1);
 		surround[3] = map.getTerrainAt(cenRow, cenCol-1);

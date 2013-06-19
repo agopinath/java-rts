@@ -1,16 +1,20 @@
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import javax.swing.JComponent;
 
+import com.agopinath.lthelogutil.Fl;
+
 
 
 public class PathFinder {
 	ArrayList<Terrain> pathData;
-	PriorityQueue<TerrainNode> openList;
-	HashSet<TerrainNode> closedList;
+	PriorityQueue<TerrainNode> openSet;
+	HashSet<TerrainNode> closedSet;
 	HashMap<TerrainNode, TerrainNode> cameFrom;
 	TerrainNode startNode, goalNode;
 	int[] startLoc, destLoc;
@@ -20,8 +24,8 @@ public class PathFinder {
     
 	public PathFinder(JComponent pane) {
         pathData = new ArrayList<Terrain>();
-		openList = new PriorityQueue<TerrainNode>();
-		closedList = new HashSet<TerrainNode>();
+		openSet = new PriorityQueue<TerrainNode>();
+		closedSet = new HashSet<TerrainNode>();
 		cameFrom = new HashMap<TerrainNode, TerrainNode>();
 		this.pane = pane;
 	}
@@ -37,26 +41,26 @@ public class PathFinder {
 	
 	public ArrayList<Terrain> findPath(Terrain start, Terrain goal, Map map) {
 		pathData = new ArrayList<Terrain>();
-		openList = new PriorityQueue<TerrainNode>();
-		closedList = new HashSet<TerrainNode>();
+		
+		closedSet = new HashSet<TerrainNode>();
+		openSet = new PriorityQueue<TerrainNode>();
 		cameFrom = new HashMap<TerrainNode, TerrainNode>();
+		
 		startNode = new TerrainNode(start);
 		goalNode = new TerrainNode(goal);
 
 		startNode.g_score = 0;
-		startNode.h_score = GameUtil.pathFinderHeuristic(startNode, goalNode);
-		startNode.f_score = startNode.g_score + startNode.h_score;
+		startNode.f_score = startNode.g_score + GameUtil.pathFinderHeuristic(startNode, goalNode);
+		openSet.offer(startNode);
 		cameFrom.put(startNode, null);
-		openList.offer(startNode);
 		TerrainNode lastNode = null;
 		TerrainNode current = startNode;
 		
-		GameUtil.changeBright(startNode.baseBlock, map, 5f);
-		refresh();
-
-		while(!openList.isEmpty()) {
+		GameUtil.changeBright(start, map, 1.4f);
+		
+		while(!openSet.isEmpty()) {
 			lastNode = current;
-			current = openList.peek();
+			current = openSet.peek();
 			
 			if(current.equals(goalNode)) {
                 System.out.println("END: " + (System.currentTimeMillis() - startTime));
@@ -64,25 +68,31 @@ public class PathFinder {
 				return reconstructPath(cameFrom, goalNode);
 			}
 			
-			openList.remove(current);		
-			closedList.add(current);
+			openSet.remove(current);		
+			closedSet.add(current);
 			Terrain[] surroundings = GameUtil.calcSurroundings(new int[] {current.baseBlock.getRow(), current.baseBlock.getCol()}, map);
 			TerrainNode neighbor = null;
 			
+			int idx = 0;
+			float moveCostToNeighbor;
 			for(Terrain curr : surroundings) {
 				neighbor = new TerrainNode(curr);
-				if(closedList.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
+				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
+					
+				if(idx == 0 || idx == 2 || idx == 6 || idx == 8) {
+					moveCostToNeighbor = 14.14f;
+				} else {
+					moveCostToNeighbor = 10.00f;
+				}
 				
-				float moveCostToNeighbor = GameUtil.pathFinderHeuristic(current, neighbor);
-
-				float tempGScore = current.g_score + moveCostToNeighbor;
-				if(!openList.contains(neighbor) || tempGScore < neighbor.g_score) {	                             
-                          neighbor.g_score = tempGScore;
-                          neighbor.h_score = GameUtil.pathFinderHeuristic(neighbor, goalNode);
-                          neighbor.f_score = neighbor.g_score + neighbor.h_score;
-                          openList.offer (neighbor);
-                          cameFrom.put(neighbor, current);
-                  }
+				float tentativeGScore = current.g_score + moveCostToNeighbor;
+				if (!openSet.contains(neighbor)|| tentativeGScore < neighbor.g_score) {
+					cameFrom.put(neighbor, current);
+					neighbor.g_score = tentativeGScore;
+					neighbor.f_score = neighbor.g_score + GameUtil.pathFinderHeuristic(neighbor, goalNode);
+					if(!openSet.contains(neighbor))
+						openSet.offer(neighbor);
+				}
 			}
 		}
 		
@@ -99,6 +109,7 @@ public class PathFinder {
 			pathData.add(currNode.baseBlock);
 			currNode = parents.get(currNode);
 		}
+		
 		return pathData;
 	}
 }
