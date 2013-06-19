@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,10 +16,10 @@ import com.agopinath.lthelogutil.Fl;
 
 public class Map {
 	private Terrain[][] mapArray;
-	private Dimension viewport;
-	private int topLRow, topLCol, botRRow, botRCol;
+	private Viewport vp;
 	private List<List<Image>> terrainImgs;
-		
+	
+	
 	public Map(File mapFile, File[] assetsDir) {
 		loadMapArray(mapFile);
 		loadAssets(assetsDir);
@@ -125,9 +126,9 @@ public class Map {
 	}
 	
 	public void draw(Graphics2D g) {
-		for(int row = topLRow; row <= botRRow; row++) {
-			for(int col = topLCol; col <= botRCol; col++) {
-				mapArray[row][col].draw(g);
+		for(int row = vp.getTopLRow(); row <= vp.getBotRRow(); row++) {
+			for(int col = vp.getTopLCol(); col <= vp.getBotRCol(); col++) {
+				mapArray[row][col].draw(g, vp.getOffsetX(), vp.getOffsetY());
 			}
 		}
 	}
@@ -140,13 +141,10 @@ public class Map {
 	}
 	
 	public void setViewport(Dimension viewArea) {
-		this.viewport = viewArea;
-		int[] rowcol = screenToMap(0 + viewport.width, 0 + viewport.height, this); // get row/col of bottom right corner of viewport
-		topLRow = topLCol = 0;
-		botRRow = rowcol[0];
-		botRCol = rowcol[1];
+		int[] rowcol = screenToMap(0 + viewArea.width, 0 + viewArea.height, this); // get row/col of bottom right corner of viewport
+		vp = new Viewport(this, 0, 0, rowcol[0], rowcol[1]);
 		
-		Fl.og("Viewport edges: " + viewport.width + ", " + viewport.height);
+		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
 	}
 	
 	public static int[] screenToMap(int x, int y, Map terrainMap) {
@@ -167,5 +165,24 @@ public class Map {
 	
 	public int getWidth() {
 		return mapArray[0].length;
+	}
+
+	public void handleKeyEvent(KeyEvent e) {
+		switch(e.getKeyCode()) {
+			case KeyEvent.VK_RIGHT:
+				vp.shiftHorizontally(1);
+				break;
+			case KeyEvent.VK_LEFT:
+				vp.shiftHorizontally(-1);
+				break;
+			case KeyEvent.VK_UP:
+				vp.shiftVertically(-1);
+				break;
+			case KeyEvent.VK_DOWN:
+				vp.shiftVertically(1);
+				break;
+		}
+		
+		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
 	}
 }

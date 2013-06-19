@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.agopinath.lthelogutil.Fl;
 
@@ -105,18 +106,23 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	}
 	
 	private void drawEntities(Graphics2D g) {
-		g.setColor(Color.red);
+		/*g.setColor(Color.red);
 		for(int row = 0; row < map.getHeight(); row++) {
 			g.drawLine(0, row*Terrain.IMG_HEIGHT, getWidth(), row*Terrain.IMG_HEIGHT);
 		}
 		
 		for(int col = 0; col < map.getHeight(); col++) {
 			g.drawLine(col*Terrain.IMG_WIDTH, 0, col*Terrain.IMG_WIDTH, getHeight());
-		}
+		}*/
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e) {}
+	public void keyPressed(final KeyEvent e) {
+		
+				map.handleKeyEvent(e);
+
+	}
+	
 	@Override
 	public void keyReleased(KeyEvent e) {}
 	@Override
