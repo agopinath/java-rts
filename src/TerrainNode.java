@@ -1,13 +1,10 @@
 
 public class TerrainNode implements Comparable<TerrainNode> {
 	float g_score, f_score;
-	int x, y;
 	Terrain baseBlock;
 	
 	public TerrainNode(Terrain block) {
 		this.baseBlock = block;
-		x = block.getX();
-		y = block.getY();
 	}
 	
 	public boolean equals(Object other) {

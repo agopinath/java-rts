@@ -1,26 +1,19 @@
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import javax.swing.JComponent;
 
-import com.agopinath.lthelogutil.Fl;
-
 
 
 public class PathFinder {
-	ArrayList<Terrain> pathData;
-	PriorityQueue<TerrainNode> openSet;
-	HashSet<TerrainNode> closedSet;
-	HashMap<TerrainNode, TerrainNode> cameFrom;
-	TerrainNode startNode, goalNode;
-	int[] startLoc, destLoc;
-	int iterations = 0;
-	long startTime;
-    JComponent pane;
+	private ArrayList<Terrain> pathData;
+	private PriorityQueue<TerrainNode> openSet;
+	private HashSet<TerrainNode> closedSet;
+	private HashMap<TerrainNode, TerrainNode> cameFrom;
+	private TerrainNode startNode, goalNode;
+	private JComponent pane;
     
 	public PathFinder(JComponent pane) {
         pathData = new ArrayList<Terrain>();
@@ -31,11 +24,8 @@ public class PathFinder {
 	}
 
 	public ArrayList<Terrain> getMovePath(int[] startLoc, int[] destLoc, Map map) {
-		startTime = System.currentTimeMillis();
 		Terrain start = map.getTerrainAt(startLoc[0],startLoc[1]);
 		Terrain dest = map.getTerrainAt(destLoc[0], destLoc[1]);
-		this.startLoc = startLoc;
-		this.destLoc = destLoc;	
 		return findPath(start, dest, map);
 	}
 	
@@ -78,8 +68,8 @@ public class PathFinder {
 				neighbor = new TerrainNode(curr);
 				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
 					
-				if(idx == 0 || idx == 2 || idx == 6 || idx == 8) {
-					moveCostToNeighbor = 14.14f;
+				if(idx == 0 || idx == 2 || idx == 6 || idx == 8) { // assign movement cost according to position
+					moveCostToNeighbor = 14.14f;				   // of neighbor node relative to current node
 				} else {
 					moveCostToNeighbor = 10.00f;
 				}

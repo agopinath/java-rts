@@ -35,8 +35,8 @@ public class GameUtil {
 	}
 	
 	public static float pathFinderHeuristic(TerrainNode start, TerrainNode dest) {
-		float dx = Math.abs(start.x - dest.x);
-		float dy = Math.abs(start.y - dest.y);
+		float dx = Math.abs(start.baseBlock.getX() - dest.baseBlock.getX());
+		float dy = Math.abs(start.baseBlock.getY() - dest.baseBlock.getY());
 		
 		return LATERAL_COST * (dx + dy) + (DIAGONAL_COST - 2f*LATERAL_COST) * Math.min(dx, dy);
 	}
