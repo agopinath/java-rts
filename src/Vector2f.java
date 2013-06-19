@@ -14,4 +14,20 @@ public class Vector2f {
 	public String toString() {
 		return String.format("[%.3f, %.3f]; len = %.3f", x, y, Vmath.len(this));
 	}
+	
+	public void normalize() {
+		Vector2f v = Vmath.normalize(this);
+		x = v.x;
+		y = v.y;
+	}
+	
+	public void mult(float scale) {
+		Vector2f v = Vmath.mult(this, scale);
+		x = v.x;
+		y = v.y;
+	}
+	
+	public float len() {
+		return Vmath.len(this);
+	}
 }

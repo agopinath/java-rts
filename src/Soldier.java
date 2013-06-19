@@ -43,7 +43,7 @@ public class Soldier {
 		velocity = Vmath.truncate(Vmath.add(velocity, steering), MAX_SPEED);
 		
 		position = Vmath.add(position, velocity);
-		Fl.og(velocity.toString());
+		
 		setPosition(position);
 	}
 }
