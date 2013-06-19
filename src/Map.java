@@ -1,8 +1,7 @@
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Polygon;
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,14 +16,16 @@ import com.agopinath.lthelogutil.Fl;
 
 public class Map {
 	private Terrain[][] mapArray;
+	private Dimension viewport;
+	private int topLRow, topLCol, botRRow, botRCol;
 	private List<Image> terrainImgs;
-	
+		
 	public Map(File mapFile, File assetsDir) {
 		loadMapArray(mapFile);
 		loadAssets(assetsDir);
 		assignAssets();
 	}
-
+	
 	private void loadMapArray(File mapFile) {
 		try {
 			Scanner scan = new Scanner(mapFile);
@@ -119,8 +120,8 @@ public class Map {
 	}
 	
 	public void draw(Graphics2D g) {
-		for(int row = 0; row < mapArray.length; row++) {
-			for(int col = 0; col < mapArray[row].length; col++) {
+		for(int row = topLRow; row <= botRRow; row++) {
+			for(int col = topLCol; col <= botRCol; col++) {
 				mapArray[row][col].draw(g);
 			}
 		}
@@ -131,6 +132,16 @@ public class Map {
 			return null;
 		
 		return mapArray[row][col];
+	}
+	
+	public void setViewport(Dimension viewArea) {
+		this.viewport = viewArea;
+		int[] rowcol = screenToMap(0 + viewport.width, 0 + viewport.height, this); // get row/col of bottom right corner of viewport
+		topLRow = topLCol = 0;
+		botRRow = rowcol[0];
+		botRCol = rowcol[1];
+		
+		Fl.og("Viewport edges: " + viewport.width + ", " + viewport.height);
 	}
 	
 	public static int[] screenToMap(int x, int y, Map terrainMap) {
@@ -144,7 +155,7 @@ public class Map {
 		Terrain t = terrainMap.mapArray[row][col];
 		return new int[] {t.getX(), t.getY()};
 	}
-
+	
 	public int getHeight() {
 		return mapArray.length;
 	}
@@ -152,5 +163,4 @@ public class Map {
 	public int getWidth() {
 		return mapArray[0].length;
 	}
-
 }

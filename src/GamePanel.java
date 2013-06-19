@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -16,6 +17,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	private Map map;
 	
 	public GamePanel() {
+		setPreferredSize(new Dimension(800, 600));
 		map = new Map(new File("assets/maps/terrain3.txt"), new File("assets/tiles/grass/"));
 		addKeyListener(this);
 		addMouseListener(this);
@@ -23,7 +25,11 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
 	}
-
+	
+	public void initPostAdd() {
+		map.setViewport(getPreferredSize());
+	}
+	
 	private class GameLoop implements Runnable {
 		private boolean gameRunning = true;
 		private boolean gamePaused = false;
@@ -45,7 +51,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 				int updateCount = 0;
 
 				if (!gamePaused) {
-					while (now - lastUpdateTime > TIME_BETWEEN_UPDATES&& updateCount < MAX_UPDATES_BEFORE_RENDER) {
+					while (now - lastUpdateTime > TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BEFORE_RENDER) {
 						updateGame();
 						lastUpdateTime += TIME_BETWEEN_UPDATES;
 						updateCount++;

@@ -1,3 +1,6 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 public class Main {
@@ -7,11 +10,13 @@ public class Main {
 	public void start() {
 		frame = new JFrame("Java RTS");
 		gamePanel = new GamePanel();
-		
 		//menuPanel = new MainMenuPanel();
 		//frame.setLayout(new GridBagLayout());
 		//frame.add(menuPanel, new GridBagConstraints());
 		frame.add(gamePanel);
+		
+		gamePanel.initPostAdd(); // called after gamePanel is added to a GUI component in case of
+								 // any pending events dependent on its being added
 		
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
