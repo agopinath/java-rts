@@ -8,14 +8,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import com.agopinath.lthelogutil.Fl;
 
 public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	private Map map;
+	private Viewport vp;
+	private List<Soldier> sols;
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(800, 600));
@@ -27,18 +29,34 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 		};
 		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
+		initEntities();
+		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
 	}
 	
-	public void initPostAdd() {
-		map.setViewport(getPreferredSize());
+	public void initPostAdd() { // to be called by parent container after it has been added
+		initViewport();
+		map.setViewport(vp);
+	}
+	
+	public void initViewport() {
+		Dimension viewArea = getPreferredSize();
+		int[] rowcol = Map.screenToMap(0 + viewArea.width, 0 + viewArea.height, map); // get row/col of bottom right corner of viewport
+		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1]);
+		
+		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
+	}
+	
+	public void initEntities() {
+		sols = new ArrayList<Soldier>();
+		sols.add(new Soldier(new Vector2f(128, 128), Color.RED));
 	}
 	
 	private class GameLoop implements Runnable {
 		private boolean gameRunning = true;
 		private boolean gamePaused = false;
-		private static final float GAME_FPS = 90f;
+		private static final float GAME_FPS = 30f;
 		private static final float TIME_BETWEEN_UPDATES = 1000000000 / GAME_FPS;
 		private static final int MAX_UPDATES_BEFORE_RENDER = 1;
 		private static final float TARGET_FPS = 60;
@@ -106,21 +124,29 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	}
 	
 	private void drawEntities(Graphics2D g) {
-		/*g.setColor(Color.red);
-		for(int row = 0; row < map.getHeight(); row++) {
-			g.drawLine(0, row*Terrain.IMG_HEIGHT, getWidth(), row*Terrain.IMG_HEIGHT);
+		for(Soldier sol : sols) {
+			sol.draw(g);
 		}
-		
-		for(int col = 0; col < map.getHeight(); col++) {
-			g.drawLine(col*Terrain.IMG_WIDTH, 0, col*Terrain.IMG_WIDTH, getHeight());
-		}*/
 	}
 	
 	@Override
 	public void keyPressed(final KeyEvent e) {
+		switch(e.getKeyCode()) {
+			case KeyEvent.VK_RIGHT:
+				vp.shiftHorizontally(1);
+				break;
+			case KeyEvent.VK_LEFT:
+				vp.shiftHorizontally(-1);
+				break;
+			case KeyEvent.VK_UP:
+				vp.shiftVertically(-1);
+				break;
+			case KeyEvent.VK_DOWN:
+				vp.shiftVertically(1);
+				break;
+		}
 		
-				map.handleKeyEvent(e);
-
+		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
 	}
 	
 	@Override
@@ -128,16 +154,12 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	@Override
 	public void keyTyped(KeyEvent e) {}
 
-	int[] start, dest;
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int[] rowcol = Map.screenToMap(e.getX(), e.getY(), map);
-		Fl.og(rowcol[0] + " " + rowcol[1]);
-		
-		if(e.getButton() == MouseEvent.BUTTON1) {
-			start = rowcol;
-		} else if(e.getButton() == MouseEvent.BUTTON3 && start != null) {
-			dest = rowcol;
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			int[] start = Map.screenToMap((int)sols.get(0).getPosition().x, (int)sols.get(0).getPosition().y, map);
+			int[] dest = Map.screenToMap(e.getX(), e.getY(), map);
+			
 			GameUtil.changeBright(map.getTerrainAt(start[0], start[1]), map, 1.4f);
 			PathFinder path = new PathFinder(this);
 			ArrayList<Terrain> p = path.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);

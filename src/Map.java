@@ -140,11 +140,8 @@ public class Map {
 		return mapArray[row][col];
 	}
 	
-	public void setViewport(Dimension viewArea) {
-		int[] rowcol = screenToMap(0 + viewArea.width, 0 + viewArea.height, this); // get row/col of bottom right corner of viewport
-		vp = new Viewport(this, 0, 0, rowcol[0], rowcol[1]);
-		
-		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
+	public void setViewport(Viewport vp) {
+		this.vp = vp;
 	}
 	
 	public static int[] screenToMap(int x, int y, Map terrainMap) {
@@ -165,24 +162,5 @@ public class Map {
 	
 	public int getWidth() {
 		return mapArray[0].length;
-	}
-
-	public void handleKeyEvent(KeyEvent e) {
-		switch(e.getKeyCode()) {
-			case KeyEvent.VK_RIGHT:
-				vp.shiftHorizontally(1);
-				break;
-			case KeyEvent.VK_LEFT:
-				vp.shiftHorizontally(-1);
-				break;
-			case KeyEvent.VK_UP:
-				vp.shiftVertically(-1);
-				break;
-			case KeyEvent.VK_DOWN:
-				vp.shiftVertically(1);
-				break;
-		}
-		
-		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
 	}
 }
