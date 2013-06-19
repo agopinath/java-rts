@@ -1,5 +1,7 @@
 
 public class Vector2f {
+	public final static Vector2f ZERO = new Vector2f();
+	
 	public float x, y;
 	
 	public Vector2f(float x, float y) {
@@ -15,7 +17,7 @@ public class Vector2f {
 		return String.format("[%.3f, %.3f]; len = %.3f", x, y, Vmath.len(this));
 	}
 	
-	public void normalize() {
+	/*public void normalize() {
 		Vector2f v = Vmath.normalize(this);
 		x = v.x;
 		y = v.y;
@@ -33,13 +35,15 @@ public class Vector2f {
 		return Vmath.sub(this, other);
 	}
 	
-	public void mult(float scale) {
-		Vector2f v = Vmath.mult(this, scale);
-		x = v.x;
-		y = v.y;
+	public Vector2f mult(float scale) {
+		return Vmath.mult(this, scale);
+	}
+	
+	public Vector2f truncate(float maxLen) {
+		return Vmath.truncate(this, maxLen);
 	}
 	
 	public float len() {
 		return Vmath.len(this);
-	}
+	}*/
 }

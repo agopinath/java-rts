@@ -13,7 +13,7 @@ public class PathFinder {
 	private HashSet<TerrainNode> closedSet;
 	private HashMap<TerrainNode, TerrainNode> cameFrom;
 	private TerrainNode startNode, goalNode;
-	private JComponent pane;
+    private JComponent pane;
     
 	public PathFinder(JComponent pane) {
         pathData = new ArrayList<Terrain>();
@@ -22,7 +22,11 @@ public class PathFinder {
 		cameFrom = new HashMap<TerrainNode, TerrainNode>();
 		this.pane = pane;
 	}
-
+	
+	public PathFinder() {
+		this(null);
+	}
+	
 	public ArrayList<Terrain> getMovePath(int[] startLoc, int[] destLoc, Map map) {
 		Terrain start = map.getTerrainAt(startLoc[0],startLoc[1]);
 		Terrain dest = map.getTerrainAt(destLoc[0], destLoc[1]);
@@ -89,12 +93,13 @@ public class PathFinder {
 	}
 	
 	private void refresh() {
-		pane.paintImmediately(0, 0, pane.getWidth(), pane.getHeight());       
+		if(pane != null)
+			pane.paintImmediately(0, 0, pane.getWidth(), pane.getHeight());       
 	}
 	
 	private ArrayList<Terrain> reconstructPath(HashMap<TerrainNode, TerrainNode> parents, TerrainNode goal) {
 		TerrainNode currNode = goal;
-		while(parents.get(currNode) != null) {
+		while(currNode != null) {
 			pathData.add(currNode.baseBlock);
 			currNode = parents.get(currNode);
 		}

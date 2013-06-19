@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.agopinath.lthelogutil.Fl;
 
@@ -20,7 +21,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	private Map map;
 	private Viewport vp;
 	private List<Soldier> sols;
-	private Point2D.Float mLoc;
+	private Vector2f[] path;
+	private int pathRadius = 4;
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(800, 600));
@@ -34,7 +36,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
 		initEntities();
-		mLoc = new Point2D.Float();
+		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
 	}
@@ -55,7 +57,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	public void initEntities() {
 		sols = new ArrayList<Soldier>();
 		sols.add(new Soldier(new Vector2f(128, 128), Color.RED));
-		sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
+		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
 	}
 	
 	private class GameLoop implements Runnable {
@@ -117,7 +119,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 
 		private void updateEntities() {
 			for(Soldier sol : sols) {
-				sol.update(mLoc.x, mLoc.y);
+				sol.update();
 			}
 		}
 	}
@@ -128,6 +130,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		Graphics2D g = (Graphics2D) gr;
 		drawMap(g);
 		drawEntities(g);
+		drawPath(g);
 	}
 	
 	private void drawMap(Graphics2D g) {
@@ -137,6 +140,35 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	private void drawEntities(Graphics2D g) {
 		for(Soldier sol : sols) {
 			sol.draw(g);
+			Vector2f c = sol.getPosition();
+			Vector2f v = Vmath.mult(sol.getVelocity(), 6);
+			g.setColor(Color.GREEN);
+			g.drawLine((int)c.x+6, (int)c.y+6, (int)(c.x+v.x), (int)(c.y+v.y));
+		}
+	}
+	
+	private void drawPath(Graphics2D g) {
+		if(path == null) return;
+		
+		for(int i = 1; i < path.length; i++) {
+			g.setColor(Color.LIGHT_GRAY);
+			g.drawOval((int)path[i-1].x-pathRadius , (int)path[i-1].y-pathRadius, pathRadius*2, pathRadius*2);
+			g.setColor(Color.CYAN);
+			g.drawLine((int)path[i-1].x, (int)path[i-1].y, (int)path[i].x, (int)path[i].y);
+		}
+		
+		for(Soldier sol : sols) {
+			if(sol.futurePos == null) continue;
+			g.setColor(Color.PINK);
+			g.drawOval((int)sol.futurePos.x-2, (int)sol.futurePos.y-2, 4, 4);
+			
+			if(sol.onPath == null) continue;
+			g.setColor(Color.BLACK);
+			g.drawOval((int)sol.onPath.x-2, (int)sol.onPath.y-2, 4, 4);
+			
+			if(sol.pathTarg == null) continue;
+			g.setColor(Color.YELLOW);
+			g.drawOval((int)sol.pathTarg.x-2, (int)sol.pathTarg.y-2, 4, 4);
 		}
 	}
 	
@@ -166,19 +198,29 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	public void keyTyped(KeyEvent e) {}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON3) {
-			int[] start = Map.screenToMap((int)sols.get(0).getPosition().x, (int)sols.get(0).getPosition().y, map);
-			int[] dest = Map.screenToMap(e.getX(), e.getY(), map);
-			
-			GameUtil.changeBright(map.getTerrainAt(start[0], start[1]), map, 1.4f);
-			PathFinder path = new PathFinder(this);
-			ArrayList<Terrain> p = path.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
-			for(Terrain t : p) {
-				GameUtil.changeBright(t, map, 1.4f);
+	public void mouseClicked(final MouseEvent e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if(e.getButton() == MouseEvent.BUTTON3) {
+					int[] start = Map.screenToMap((int)sols.get(0).getPosition().x, (int)sols.get(0).getPosition().y, map);
+					int[] dest = Map.screenToMap(e.getX(), e.getY(), map);
+					
+					PathFinder finder = new PathFinder();
+					ArrayList<Terrain> p = finder.findPath(map.getTerrainAt(start[0]+2, start[1]+3), map.getTerrainAt(dest[0], dest[1]), map);
+					path = new Vector2f[p.size()];
+					for(int i = 0; i < p.size(); i++) {
+						Terrain t = p.get(i);
+						//path[i] = new Vector2f(t.getX(), t.getY());
+						path[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
+						GameUtil.changeBright(t, map, 1.4f);
+					}
+					
+					sols.get(0).setPath(path, pathRadius);
+					paintImmediately(0, 0, getWidth(), getHeight());
+				}	
 			}
-			this.paintImmediately(0, 0, getWidth(), getHeight());
-		}	
+		});
 	}
 	
 	@Override
@@ -195,7 +237,6 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		mLoc.x = e.getX();
-		mLoc.y = e.getY();
+		
 	}
 }
