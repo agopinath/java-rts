@@ -9,7 +9,7 @@ public class Vmath {
 	}
 	
 	public static float angle(Vector2f u, Vector2f v) {
-		return (float) Math.acos(dot(unitVector(u),unitVector(v)));
+		return (float) Math.acos(dot(normalize(u),normalize(v)));
 	}
 	
 	public static Vector2f add(Vector2f u, Vector2f v) {
@@ -24,7 +24,7 @@ public class Vmath {
 		return new Vector2f(v.x * scale, v.y * scale);
 	}
 	
-	public static Vector2f unitVector(Vector2f v) {
+	public static Vector2f normalize(Vector2f v) {
 		return mult(v, 1f/(len(v)));
 	}
 	

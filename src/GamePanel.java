@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +16,17 @@ import javax.swing.JPanel;
 
 import com.agopinath.lthelogutil.Fl;
 
-public class GamePanel extends JPanel implements KeyListener, MouseListener {
+public class GamePanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
 	private Map map;
 	private Viewport vp;
 	private List<Soldier> sols;
+	private Point2D.Float mLoc;
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(800, 600));
 		addKeyListener(this);
 		addMouseListener(this);
+		addMouseMotionListener(this);
 		
 		File[] mapAssets = new File[] {
 			new File("assets/tiles/grass/"), new File("assets/tiles/dirt/")
@@ -30,7 +34,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
 		initEntities();
-		
+		mLoc = new Point2D.Float();
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
 	}
@@ -51,6 +55,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	public void initEntities() {
 		sols = new ArrayList<Soldier>();
 		sols.add(new Soldier(new Vector2f(128, 128), Color.RED));
+		sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
 	}
 	
 	private class GameLoop implements Runnable {
@@ -107,7 +112,13 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 		}
 		
 		private void updateGame() {
-			
+			updateEntities();
+		}
+
+		private void updateEntities() {
+			for(Soldier sol : sols) {
+				sol.update(mLoc.x, mLoc.y);
+			}
 		}
 	}
 	
@@ -178,4 +189,13 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	public void mousePressed(MouseEvent e) {}
 	@Override
 	public void mouseReleased(MouseEvent e) {}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		mLoc.x = e.getX();
+		mLoc.y = e.getY();
+	}
 }
