@@ -50,17 +50,13 @@ public class Soldier {
 	
 	public void update() {
 		if(path == null) return;
-		Vector2f steering = steer.steerAlongPath(position, velocity, 20, 1, 32);
+		Vector2f steering = steer.steerAlongPath(position, velocity, 20f, MAX_STEER, 1);
 		applySteeringForces(steering);
-	}
-	
-	private Vector2f getFuturePosition(float predictionTime) {
-		return Vmath.add(position, Vmath.mult(velocity, predictionTime));
 	}
 	
 	private void applySteeringForces(Vector2f steering) {
 		velocity = Vmath.setLength(Vmath.add(velocity, steering), MOVE_SPEED);
-		position = getFuturePosition(1f);
+		position = steer.getFuturePosition(position, velocity, 1f);
 		
 		setPosition(position);
 		

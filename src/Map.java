@@ -1,7 +1,5 @@
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -77,10 +75,10 @@ public class Map {
 			for (int col = 0; col < mapArray[row].length; col++) {
 				switch (mapArray[row][col].getType()) { // set the images of mapArray elements
 					case GRASS:
-						mapArray[row][col].setImage(terrainImgs.get(0).get((int) (Math.random() * terrainImgs.size())));
+						mapArray[row][col].setBaseImage(terrainImgs.get(0).get((int) (Math.random() * terrainImgs.size())));
 						break;
 					case DIRT:
-						mapArray[row][col].setImage(terrainImgs.get(1).get((int) (Math.random() * terrainImgs.size())));
+						mapArray[row][col].setBaseImage(terrainImgs.get(1).get((int) (Math.random() * terrainImgs.size())));
 						break;
 					default:
 						Fl.err("No terrain of that type");
@@ -142,6 +140,14 @@ public class Map {
 	
 	public void setViewport(Viewport vp) {
 		this.vp = vp;
+	}
+	
+	public void resetMap() {
+		for (int row = 0; row < mapArray.length; row++) {
+			for (int col = 0; col < mapArray[row].length; col++) {
+				mapArray[row][col].setBaseImage(mapArray[row][col].getBaseImage());
+			}
+		}
 	}
 	
 	public static int[] screenToMap(int x, int y, Map terrainMap) {

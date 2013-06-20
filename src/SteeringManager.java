@@ -15,7 +15,7 @@ public class SteeringManager {
 
 	// predictionTime specifies extent of future prediction
 	// direction (should be either +1 or -1) specifies direction along path (forward or backward, respectively)
-	public Vector2f steerAlongPath(Vector2f currPos, Vector2f currVelocity, float predictionTime, int direction, float pathrad) {
+	public Vector2f steerAlongPath(Vector2f currPos, Vector2f currVelocity, float predictionTime, float maxSteer, int direction) {
 		float pathDistOffset = Vmath.len(currVelocity) * predictionTime * direction;
 		Vector2f futurePos = getFuturePosition(currPos, currVelocity, predictionTime);
 
@@ -27,7 +27,7 @@ public class SteeringManager {
 							(nowPathDist > futurePathDist));
 
 		Vector2f onPath = path.mapPointToPath(futurePos);
-		float outside = (float) (Vmath.distBetween(onPath, futurePos) - pathrad);
+		float outside = (float) (Vmath.distBetween(onPath, futurePos) - PATH_RADIUS);
 
 		if (outside < 0 && rightway) {
 			return Vector2f.ZERO;

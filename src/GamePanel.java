@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	private Viewport vp;
 	private List<Soldier> sols;
 	private Vector2f[] path;
+	private boolean drawPath;
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(800, 600));
@@ -146,7 +147,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	}
 	
 	private void drawPath(Graphics2D g) {
-		if(path == null) return;
+		if(path == null || !drawPath) return;
 		float pathRad = SteeringManager.PATH_RADIUS;
 		for(int i = 1; i < path.length; i++) {
 			g.setColor(Color.LIGHT_GRAY);
@@ -171,6 +172,10 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			case KeyEvent.VK_DOWN:
 				vp.shiftVertically(1);
 				break;
+			case KeyEvent.VK_F12:
+				map.resetMap();
+				drawPath = false;
+				break;
 		}
 		
 		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
@@ -181,6 +186,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	@Override
 	public void keyTyped(KeyEvent e) {}
 
+	
 	@Override
 	public void mouseClicked(final MouseEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -202,10 +208,13 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					
 					sols.get(0).setPath(path);
 					paintImmediately(0, 0, getWidth(), getHeight());
+					
+					drawPath = true;
 				}	
 			}
 		});
 	}
+	
 	
 	@Override
 	public void mouseEntered(MouseEvent e) {}

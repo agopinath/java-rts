@@ -7,6 +7,7 @@ public class Terrain {
 	public static int IMG_WIDTH;
 	
 	private Image img;
+	private Image baseImg;
 	private TerrainType type;
 	private int x, y;
 	private int row;
@@ -30,7 +31,16 @@ public class Terrain {
 	public void setImage(Image img) {
 		this.img = img;
 	}
+	
+	public Image getBaseImage() {
+		return baseImg;
+	}
 
+	public void setBaseImage(Image baseImg) {
+		this.baseImg = baseImg;
+		setImage(baseImg);
+	}
+	
 	public TerrainType getType() {
 		return type;
 	}
