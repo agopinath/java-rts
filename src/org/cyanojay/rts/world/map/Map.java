@@ -17,12 +17,14 @@ public class Map {
 	private Terrain[][] mapArray;
 	private Viewport vp;
 	private List<List<Image>> terrainImgs;
-	
+	private PathfindingMap pathMap;
 	
 	public Map(File mapFile, File[] assetsDir) {
 		loadMapArray(mapFile);
 		loadAssets(assetsDir);
 		assignAssets();
+		
+		pathMap = new PathfindingMap(this);
 	}
 	
 	private void loadMapArray(File mapFile) {
