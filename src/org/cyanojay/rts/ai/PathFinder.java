@@ -1,5 +1,6 @@
 package org.cyanojay.rts.ai;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -108,6 +109,8 @@ public class PathFinder {
 			pathData.add(currNode.baseBlock);
 			currNode = parents.get(currNode);
 		}
+		
+		Collections.reverse(pathData); // reverse the list because it is currently ordered from the goal to the start
 		
 		return pathData;
 	}

@@ -48,7 +48,6 @@ public class Swarm implements Iterable<Soldier> {
 	}
 	
 	public void setPath(Vector2f[] p) {
-		Collections.reverse(Arrays.asList(p));
 		this.path = new Pathway(p);
 		steer.setPath(path);
 	}
