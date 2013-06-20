@@ -23,6 +23,7 @@ public class Soldier implements Drawable {
 	private Color color;
 	private Ellipse2D.Float body;
 	private long uid;
+	private UnitState state;
 	
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
@@ -68,6 +69,14 @@ public class Soldier implements Drawable {
 		
 		setPosition(position);
 	}*/
+
+	public UnitState getState() {
+		return state;
+	}
+
+	public void setState(UnitState state) {
+		this.state = state;
+	}
 
 	public boolean equals(Object other) {
 		return (this.uid == ((Soldier) other).uid);

@@ -64,7 +64,10 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	
 	public void initEntities() {
 		swarm = new Swarm();
-		swarm.add(new Soldier(new Vector2f(128, 128), Color.RED));
+		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
+		swarm.add(new Soldier(new Vector2f(128, 260), Color.GREEN));
+		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
+		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
 	}
 	
@@ -205,7 +208,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					path = new Vector2f[p.size()];
 					for(int i = 0; i < p.size(); i++) {
 						Terrain t = p.get(i);
-						//path[i] = new Vector2f(t.getX(), t.getY());
+						
 						path[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
 						GameUtil.changeBright(t, map, 1.4f);
 					}
@@ -221,7 +224,6 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			}
 		});
 	}
-	
 	
 	@Override
 	public void mouseEntered(MouseEvent e) {}

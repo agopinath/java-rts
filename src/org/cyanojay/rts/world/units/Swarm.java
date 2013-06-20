@@ -50,14 +50,23 @@ public class Swarm implements Iterable<Soldier> {
 	public void setPath(Vector2f[] p) {
 		this.path = new Pathway(p);
 		steer.setPath(path);
+
+		for(Soldier s : units) {
+			s.setState(UnitState.MOVING);
+		}
 	}
 	
 	public void update() {
 		if(path == null) return;
 		
-		int numArrived = 0;;
+		int numArrived = 0;
 		for(Soldier s : units) {
-			if(updateUnit(s)) numArrived++;
+			if(s.getState() != UnitState.ARRIVED) {
+				if(updateUnit(s)) {
+					s.setState(UnitState.ARRIVED);
+					numArrived++;
+				}
+			}
 		}
 		
 		if(numArrived == units.size()) {
