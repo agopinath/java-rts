@@ -139,6 +139,10 @@ public class Map {
 		return mapArray[row][col];
 	}
 	
+	public Terrain getTerrainAt(int[] rowcol) {
+		return getTerrainAt(rowcol[0], rowcol[1]);
+	}
+	
 	public void setViewport(Viewport vp) {
 		this.vp = vp;
 	}

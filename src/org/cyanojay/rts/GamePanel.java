@@ -65,9 +65,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		swarm = new Swarm(map);
 		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
 		swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
-		//swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
-		//swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
-		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
+		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
+		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 	}
 	
 	private class GameLoop implements Runnable {
@@ -198,9 +197,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			@Override
 			public void run() {
 				if(e.getButton() == MouseEvent.BUTTON3) {
-					Soldier leader = swarm.getLeader(e.getX(), e.getY());
+					swarm.findLeader(e.getX(), e.getY());
 					int[] dest = map.screenToMap(e.getX(), e.getY());
-					swarm.moveToDestination(leader, dest);
+					swarm.moveToDestination(dest);
 					
 					paintImmediately(0, 0, getWidth(), getHeight());
 					

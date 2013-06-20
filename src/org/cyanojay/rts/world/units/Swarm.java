@@ -44,19 +44,18 @@ public class Swarm implements Iterable<Soldier> {
 		units.add(soldier);
 	}
 	
-	public Soldier getLeader(int mX, int mY) {
-		Vector2f dest = new Vector2f(mX, mY);
+	public void findLeader(int mouseX, int mouseY) { // finds the leader of the swarm based on its proximity to dest
+		int[] destRowCol = map.screenToMap(mouseX, mouseY);
+		int[] locs = map.mapToScreen(destRowCol[0], destRowCol[1]);
+		Vector2f dest = new Vector2f(locs[0], locs[1]);
 		float minDist = Float.MAX_VALUE;
 		
-		Soldier leader = null;
 		for(Soldier s : units) {
 			if(Vmath.distBetween(s.getPosition(), dest) < minDist) {
 				minDist = Vmath.distBetween(s.getPosition(), dest);
 				leader = s;
 			}
 		}
-		
-		return leader;
 	}
 	
 	public void setOverallPath(Vector2f[] p) { // sets overall path to the destination
@@ -81,12 +80,6 @@ public class Swarm implements Iterable<Soldier> {
 			}
 			if(!s.getCurrPath().equals(path)) uniquePaths++;
 		}
-		
-		Fl.og("Unique pahts: " + uniquePaths);
-		/*if(numArrived == units.size()) {
-			Fl.og("Swarm arrived");
-			path = null;
-		}*/
 	}
 	
 	private void updateUnit(Soldier s) {
@@ -118,23 +111,23 @@ public class Swarm implements Iterable<Soldier> {
 		}
 	}
 
-	public void moveToDestination(Soldier currLeader, int[] dest) {
-		leader = currLeader;
+	public void moveToDestination(int[] dest) {
 		int[] start = GameUtil.unitToMapLoc(leader, map, vp);
 		Vector2f[] leaderPath = calcPath(start, dest);
 		for(Soldier s : units) {
 			if(s.equals(leader)) continue;
+			int[] currStart = GameUtil.unitToMapLoc(s, map, vp);
+			
 			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1]);
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1);
-			
-			int[] currStart = GameUtil.unitToMapLoc(s, map, vp);
+	
 			Vector2f[] soldierPath = null;
 			if(d1 < d2) {
 				soldierPath = calcPath(currStart, dest);
 				s.setCurrPath(new Pathway(soldierPath));
 			} else {
-				soldierPath = calcPath(currStart, map.screenToMap((int)t1.x, (int)t1.y));
+				soldierPath = calcPath(currStart, map.screenToMap((int)t1.x+vp.getOffsetX(), (int)t1.y+vp.getOffsetY()));
 				s.setCurrPath(new Pathway(soldierPath));
 			}
 		}
@@ -155,9 +148,9 @@ public class Swarm implements Iterable<Soldier> {
 		return nearest;
 	}
 
-	private Vector2f[] calcPath(int[] start, int[] dest) {
+	private Vector2f[] calcPath(int[] startLoc, int[] destLoc) {
 		PathFinder finder = new PathFinder();
-		ArrayList<Terrain> pathList = finder.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
+		ArrayList<Terrain> pathList = finder.findPath(map.getTerrainAt(startLoc), map.getTerrainAt(destLoc), map);
 		Vector2f[] vPath = new Vector2f[pathList.size()];
 		for(int i = 0; i < pathList.size(); i++) {
 			Terrain t = pathList.get(i);
