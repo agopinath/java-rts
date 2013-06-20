@@ -72,11 +72,13 @@ public class PathFinder {
 			
 			int idx = 0;
 			float moveCostToNeighbor;
-			for(Terrain curr : surroundings) {
-				if(curr == null) continue;
+			for(Terrain neighborT : surroundings) {
+				if(neighborT == null) continue;
 				
-				neighbor = new TerrainNode(curr);
-				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor)) continue;
+				neighbor = new TerrainNode(neighborT);
+				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor) || 
+					!GameUtil.isValidLocation(map, current.baseBlock.getRow(), current.baseBlock.getCol(), 
+					neighborT.getRow(), neighborT.getCol(), false)) continue;
 					
 				if(idx == 0 || idx == 2 || idx == 6 || idx == 8) { // assign movement cost according to position
 					moveCostToNeighbor = 14.14f;				   // of neighbor node relative to current node

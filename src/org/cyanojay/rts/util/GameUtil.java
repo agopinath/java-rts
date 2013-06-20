@@ -7,6 +7,9 @@ import org.cyanojay.rts.ai.TerrainNode;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.world.map.Map;
 import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.TerrainType;
+import org.cyanojay.rts.world.map.Viewport;
+import org.cyanojay.rts.world.units.Soldier;
 
 
 public class GameUtil {
@@ -85,9 +88,34 @@ public class GameUtil {
 	}
 	
 	public static boolean isBlocked(TerrainNode neighbor) {
-		return false;
+		return neighbor.baseBlock.getType() == TerrainType.DIRT;
+		//return false;
 	}
 	
+	public static boolean isBlocked(Map m, int row, int col) {
+		return m.getTerrainAt(row, col).getType() == TerrainType.DIRT;
+		//return false;
+	}
+
+	public static boolean isValidLocation(Map m, int sx, int sy, int x, int y, boolean cutCorners) {
+		boolean invalid = false;
+
+		if ((!invalid) && ((sx != x) || (sy != y))) {
+			invalid = GameUtil.isBlocked(m, x, y);
+		}
+
+		// If tile is still invalid, and we are not cutting corners,
+		// and the destination node is diagonal from current node,
+		// flag the tile invalid if either of the two tiles crossed
+		// on the way to it are blocked.
+		if (!invalid && !cutCorners) {
+			if (x - sx != 0 && y - sy != 0) {
+				invalid = GameUtil.isBlocked(m, x, sy) || GameUtil.isBlocked(m, sx, y);
+			}
+		}
+		return !invalid;
+	}
+	 
 	public static void changeBright(Terrain terr, Map map, float factor) {
 		BufferedImage img = (BufferedImage) terr.getImage();
 		BufferedImage dest = GameUtil.deepCopy(img);
@@ -96,6 +124,10 @@ public class GameUtil {
 		rescaleOp.filter(img, dest);
 
 		terr.setImage(dest);
+	}
+	
+	public static int[] unitToMapLoc(Soldier s, Map m, Viewport vp) {
+		return m.screenToMap((int)s.getPosition().x+vp.getOffsetX(), (int)s.getPosition().y+vp.getOffsetY());
 	}
 	
 	private static long curUID = 0;
