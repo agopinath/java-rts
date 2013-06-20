@@ -4,6 +4,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.RescaleOp;
 
 import org.cyanojay.rts.ai.TerrainNode;
+import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.world.map.Map;
 import org.cyanojay.rts.world.map.Terrain;
 
@@ -42,6 +43,13 @@ public class GameUtil {
 	public static float pathFinderHeuristic(TerrainNode start, TerrainNode dest) {
 		float dx = Math.abs(start.baseBlock.getX() - dest.baseBlock.getX());
 		float dy = Math.abs(start.baseBlock.getY() - dest.baseBlock.getY());
+		
+		return LATERAL_COST * (dx + dy) + (DIAGONAL_COST - 2f*LATERAL_COST) * Math.min(dx, dy);
+	}
+	
+	public static float pathFinderHeuristic(Vector2f start, Vector2f dest) {
+		float dx = Math.abs(start.x - dest.x);
+		float dy = Math.abs(start.y - dest.y);
 		
 		return LATERAL_COST * (dx + dy) + (DIAGONAL_COST - 2f*LATERAL_COST) * Math.min(dx, dy);
 	}

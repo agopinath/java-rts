@@ -20,24 +20,28 @@ public class SteeringManager {
 	// predictionTime specifies extent of future prediction
 	// direction (should be either +1 or -1) specifies direction along path (forward or backward, respectively)
 	public Vector2f steerAlongPath(Vector2f currPos, Vector2f currVelocity, float predictionTime, float maxSteer, int direction) {
+		return steerAlongPath(currPos, currVelocity, predictionTime, maxSteer, direction, this.path);
+	}
+	
+	public Vector2f steerAlongPath(Vector2f currPos, Vector2f currVelocity, float predictionTime, float maxSteer, int direction, Pathway p) {
 		float pathDistOffset = Vmath.len(currVelocity) * predictionTime * direction;
 		Vector2f futurePos = getFuturePosition(currPos, currVelocity, predictionTime);
 
-		float nowPathDist = path.mapPointToPathDistance(currPos);
-		float futurePathDist = path.mapPointToPathDistance(futurePos);
+		float nowPathDist = p.mapPointToPathDistance(currPos);
+		float futurePathDist = p.mapPointToPathDistance(futurePos);
 
 		boolean rightway = ((pathDistOffset > 0) ? 
 							(nowPathDist < futurePathDist) :
 							(nowPathDist > futurePathDist));
 
-		Vector2f onPath = path.mapPointToPath(futurePos);
+		Vector2f onPath = p.mapPointToPath(futurePos);
 		float outside = (float) (Vmath.distBetween(onPath, futurePos) - PATH_RADIUS);
 
 		if (outside < 0 && rightway) {
 			return Vector2f.ZERO;
 		} else {
 			float targetPathDist = nowPathDist + pathDistOffset;
-			Vector2f pathTarg = path.mapDistanceToPoint(targetPathDist);
+			Vector2f pathTarg = p.mapDistanceToPoint(targetPathDist);
 			return seek(currPos, currVelocity, pathTarg, 6f);
 		}
 	}

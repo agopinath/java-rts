@@ -1,5 +1,6 @@
 package org.cyanojay.rts.ai.steering;
 
+import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
 
@@ -15,6 +16,7 @@ public class Pathway {
 	private float segmentProjection;
 	private float total2DPathLength;
 	private int pathLength;
+	private long uid;
 	
 	public Pathway(Vector2f[] p) {
 		pathLength = p.length;
@@ -31,6 +33,8 @@ public class Pathway {
 	            total2DPathLength += lengths[i];
 	        }
 		}
+		
+		uid = GameUtil.getUID();
 	}
 	
 	public Vector2f mapPointToPath(Vector2f point) {
@@ -128,5 +132,9 @@ public class Pathway {
 	
 	public float getTotal2DPathLength() {
 		return total2DPathLength;
+	}
+	
+	public boolean equals(Object other) {
+		return (this.uid == ((Pathway)other).uid);
 	}
 }

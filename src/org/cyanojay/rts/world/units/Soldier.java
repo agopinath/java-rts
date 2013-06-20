@@ -24,6 +24,7 @@ public class Soldier implements Drawable {
 	private Ellipse2D.Float body;
 	private long uid;
 	private UnitState state;
+	private Pathway currPath;
 	
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
@@ -78,6 +79,19 @@ public class Soldier implements Drawable {
 		this.state = state;
 	}
 
+	public Pathway getCurrPath() {
+		return currPath;
+	}
+
+	public void setCurrPath(Pathway currPath) {
+		this.currPath = currPath;
+	}
+	
+	public boolean atEndOfPath() {
+		if(currPath == null) return false;
+		return Vmath.distBetween(position, currPath.getPathVectorAt(currPath.getPathSize()-1)) < 80;
+	}
+	
 	public boolean equals(Object other) {
 		return (this.uid == ((Soldier) other).uid);
 	}

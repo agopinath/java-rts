@@ -56,16 +56,16 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	
 	public void initViewport() {
 		Dimension viewArea = getPreferredSize();
-		int[] rowcol = map.screenToMap(0 + viewArea.width, 0 + viewArea.height, map); // get row/col of bottom right corner of viewport
+		int[] rowcol = map.screenToMap(0 + viewArea.width, 0 + viewArea.height); // get row/col of bottom right corner of viewport
 		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1]);
 		
 		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
 	}
 	
 	public void initEntities() {
-		swarm = new Swarm();
+		swarm = new Swarm(map, vp);
 		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
-		swarm.add(new Soldier(new Vector2f(128, 260), Color.GREEN));
+		swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
 		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
 		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
@@ -199,26 +199,15 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			@Override
 			public void run() {
 				if(e.getButton() == MouseEvent.BUTTON3) {
-					int[] dest = map.screenToMap(e.getX(), e.getY(), map);
 					Soldier leader = swarm.getLeader(e.getX(), e.getY());
-					int[] start = map.screenToMap((int)leader.getPosition().x+vp.getOffsetX(), (int)leader.getPosition().y+vp.getOffsetY(), map);
+					int[] dest = map.screenToMap(e.getX(), e.getY());
+					swarm.moveToDestination(vp, leader, dest);
 					
-					PathFinder finder = new PathFinder();
-					ArrayList<Terrain> p = finder.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
-					path = new Vector2f[p.size()];
-					for(int i = 0; i < p.size(); i++) {
-						Terrain t = p.get(i);
-						
-						path[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
-						GameUtil.changeBright(t, map, 1.4f);
-					}
-					
-					swarm.setPath(path);
 					paintImmediately(0, 0, getWidth(), getHeight());
 					
 					drawPath = true;
 				} else {
-					int[] d = map.screenToMap(e.getX(), e.getY(), map);
+					int[] d = map.screenToMap(e.getX(), e.getY());
 					Fl.og(d[0] + " " + d[1]);
 				}
 			}
