@@ -10,7 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -22,13 +21,14 @@ import org.cyanojay.rts.world.map.Map;
 import org.cyanojay.rts.world.map.Terrain;
 import org.cyanojay.rts.world.map.Viewport;
 import org.cyanojay.rts.world.units.Soldier;
+import org.cyanojay.rts.world.units.Swarm;
 
 import com.agopinath.lthelogutil.Fl;
 
 public class GamePanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
 	private Map map;
 	private Viewport vp;
-	private List<Soldier> sols;
+	private Swarm swarm;
 	private Vector2f[] path;
 	private boolean drawPath;
 	
@@ -63,8 +63,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	}
 	
 	public void initEntities() {
-		sols = new ArrayList<Soldier>();
-		sols.add(new Soldier(new Vector2f(128, 128), Color.RED));
+		swarm = new Swarm();
+		swarm.add(new Soldier(new Vector2f(128, 128), Color.RED));
 		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
 	}
 	
@@ -126,9 +126,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		}
 
 		private void updateEntities() {
-			for(Soldier sol : sols) {
-				sol.update();
-			}
+			swarm.update();
 		}
 	}
 	
@@ -146,7 +144,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	}
 	
 	private void drawEntities(Graphics2D g) {
-		for(Soldier sol : sols) {
+		for(Soldier sol : swarm) {
 			sol.draw(g, vp.getOffsetX(), vp.getOffsetY());
 		}
 	}
@@ -198,8 +196,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			@Override
 			public void run() {
 				if(e.getButton() == MouseEvent.BUTTON3) {
-					int[] start = map.screenToMap((int)sols.get(0).getPosition().x+vp.getOffsetX(), (int)sols.get(0).getPosition().y+vp.getOffsetY(), map);
 					int[] dest = map.screenToMap(e.getX(), e.getY(), map);
+					Soldier leader = swarm.getLeader(e.getX(), e.getY());
+					int[] start = map.screenToMap((int)leader.getPosition().x+vp.getOffsetX(), (int)leader.getPosition().y+vp.getOffsetY(), map);
 					
 					PathFinder finder = new PathFinder();
 					ArrayList<Terrain> p = finder.findPath(map.getTerrainAt(start[0], start[1]), map.getTerrainAt(dest[0], dest[1]), map);
@@ -211,7 +210,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 						GameUtil.changeBright(t, map, 1.4f);
 					}
 					
-					sols.get(0).setPath(path);
+					swarm.setPath(path);
 					paintImmediately(0, 0, getWidth(), getHeight());
 					
 					drawPath = true;

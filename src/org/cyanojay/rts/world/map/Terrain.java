@@ -2,8 +2,10 @@ package org.cyanojay.rts.world.map;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
+import org.cyanojay.rts.world.Drawable;
 
-public class Terrain {
+
+public class Terrain implements Drawable {
 	public static int IMG_HEIGHT;
 	public static int IMG_WIDTH;
 	

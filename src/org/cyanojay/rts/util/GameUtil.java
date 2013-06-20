@@ -89,4 +89,9 @@ public class GameUtil {
 
 		terr.setImage(dest);
 	}
+	
+	private static long curUID = 0;
+	public static synchronized long getUID() {
+		return curUID++;
+	}
 }

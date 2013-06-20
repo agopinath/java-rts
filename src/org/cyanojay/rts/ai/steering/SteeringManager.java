@@ -55,7 +55,7 @@ public class SteeringManager {
 	}
 	
 	public Vector2f applySteeringToVelocity(Vector2f currVelocity, Vector2f steering, float moveSpeed) {
-		return Vmath.truncate(Vmath.add(currVelocity, steering), moveSpeed);
+		return Vmath.setLength(Vmath.add(currVelocity, steering), moveSpeed);
 	}
 	
 	public void setPath(Pathway path) {
