@@ -1,3 +1,4 @@
+package org.cyanojay.rts.util.vector;
 
 public class Vector2f {
 	public final static Vector2f ZERO = new Vector2f();

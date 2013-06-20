@@ -1,9 +1,14 @@
+package org.cyanojay.rts.ai;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import javax.swing.JComponent;
+
+import org.cyanojay.rts.util.GameUtil;
+import org.cyanojay.rts.world.map.Map;
+import org.cyanojay.rts.world.map.Terrain;
 
 
 

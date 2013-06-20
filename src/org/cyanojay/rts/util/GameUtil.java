@@ -1,6 +1,11 @@
+package org.cyanojay.rts.util;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.RescaleOp;
+
+import org.cyanojay.rts.ai.TerrainNode;
+import org.cyanojay.rts.world.map.Map;
+import org.cyanojay.rts.world.map.Terrain;
 
 
 public class GameUtil {

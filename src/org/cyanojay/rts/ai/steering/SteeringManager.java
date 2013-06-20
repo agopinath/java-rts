@@ -1,3 +1,7 @@
+package org.cyanojay.rts.ai.steering;
+
+import org.cyanojay.rts.util.vector.Vector2f;
+import org.cyanojay.rts.util.vector.Vmath;
 
 
 public class SteeringManager {

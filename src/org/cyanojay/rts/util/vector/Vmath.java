@@ -1,3 +1,4 @@
+package org.cyanojay.rts.util.vector;
 
 public class Vmath {
 	public static float dot(Vector2f u, Vector2f v) {

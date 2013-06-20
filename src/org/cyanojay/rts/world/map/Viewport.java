@@ -1,3 +1,4 @@
+package org.cyanojay.rts.world.map;
 
 public class Viewport {
 	private Map wholeMap;

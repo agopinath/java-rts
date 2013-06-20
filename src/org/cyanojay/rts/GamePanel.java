@@ -1,3 +1,4 @@
+package org.cyanojay.rts;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,6 +14,14 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import org.cyanojay.rts.ai.PathFinder;
+import org.cyanojay.rts.util.GameUtil;
+import org.cyanojay.rts.util.vector.Vector2f;
+import org.cyanojay.rts.world.map.Map;
+import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.Viewport;
+import org.cyanojay.rts.world.units.Soldier;
 
 import com.agopinath.lthelogutil.Fl;
 

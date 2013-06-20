@@ -1,8 +1,15 @@
+package org.cyanojay.rts.world.units;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 import java.util.Collections;
+
+import org.cyanojay.rts.ai.steering.Pathway;
+import org.cyanojay.rts.ai.steering.SteeringManager;
+import org.cyanojay.rts.util.vector.Vector2f;
+import org.cyanojay.rts.util.vector.Vmath;
+import org.cyanojay.rts.world.Drawable;
 
 
 public class Soldier implements Drawable {

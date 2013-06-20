@@ -1,3 +1,4 @@
+package org.cyanojay.rts;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 

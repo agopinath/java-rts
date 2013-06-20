@@ -1,7 +1,10 @@
+package org.cyanojay.rts.ai;
+
+import org.cyanojay.rts.world.map.Terrain;
 
 public class TerrainNode implements Comparable<TerrainNode> {
-	float g_score, f_score;
-	Terrain baseBlock;
+	public float g_score, f_score;
+	public Terrain baseBlock;
 	
 	public TerrainNode(Terrain block) {
 		this.baseBlock = block;
