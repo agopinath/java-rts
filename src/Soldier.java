@@ -5,11 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 
-public class Soldier {
+public class Soldier implements Drawable {
 	private Vector2f position;
 	private Vector2f velocity;
 	private final static float MOVE_SPEED = 5f;
 	private final static float MAX_STEER = 2f;
+	public final static float SIZE = 12f;
 	private Color color;
 	private Ellipse2D.Float body;
 	private Pathway path;
@@ -18,16 +19,19 @@ public class Soldier {
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
 		color = c;
-		body = new Ellipse2D.Float(position.x, position.y, 12, 12);
+		body = new Ellipse2D.Float(position.x, position.y, SIZE, SIZE);
 		
 		velocity = new Vector2f();
 		
 		steer = new SteeringManager(null);
 	}
 	
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, int xOff, int yOff) {
 		g.setColor(color);
-		g.fill(body);
+		g.fillOval((int)(body.x + xOff), (int)(body.y + yOff), (int)body.width, (int)body.height);
+		Vector2f velocityScale = Vmath.mult(velocity, 4f);
+		g.setColor(Color.GREEN);
+		g.drawLine((int)(xOff+position.x+SIZE/2), (int)(yOff+position.y+SIZE/2), (int)(xOff+position.x+velocity.x+velocityScale.x), (int)(yOff+position.y+velocity.y+velocityScale.y));
 	}
 	
 	public Vector2f getPosition() {

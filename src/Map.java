@@ -150,16 +150,16 @@ public class Map {
 		}
 	}
 	
-	public static int[] screenToMap(int x, int y, Map terrainMap) {
-		int row = y / Terrain.IMG_HEIGHT;
-		int col = x / Terrain.IMG_WIDTH;
+	public int[] screenToMap(int x, int y, Map terrainMap) {
+		int row = (y - ((vp != null) ? vp.getOffsetY() : 0)) / Terrain.IMG_HEIGHT;
+		int col = (x - ((vp != null) ? vp.getOffsetX() : 0)) / Terrain.IMG_WIDTH;
 		
 		return new int[] {row, col};
 	}
 	
-	public static int[] mapToScreen(int row, int col, Map terrainMap) {
+	public int[] mapToScreen(int row, int col, Map terrainMap) {
 		Terrain t = terrainMap.mapArray[row][col];
-		return new int[] {t.getX(), t.getY()};
+		return new int[] {t.getX() - ((vp != null) ? vp.getOffsetX() : 0), t.getY() - ((vp != null) ? vp.getOffsetY() : 0)};
 	}
 	
 	public int getHeight() {

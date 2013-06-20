@@ -1,7 +1,7 @@
 
 
 public class SteeringManager {
-	public final static float PATH_RADIUS = 16f;
+	public final static float PATH_RADIUS = 4f;
 	
 	private Pathway path;
 	

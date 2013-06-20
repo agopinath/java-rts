@@ -21,7 +21,7 @@ public class Terrain {
 	}
 
 	public void draw(Graphics2D g, int xOff, int yOff) {
-		g.drawImage(img, xOff+x, yOff+y, null);
+		g.drawImage(img, x+xOff, y+yOff, null);
 	}
 
 	public Image getImage() {
