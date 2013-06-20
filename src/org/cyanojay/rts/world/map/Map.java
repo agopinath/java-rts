@@ -170,4 +170,8 @@ public class Map {
 	public int getWidth() {
 		return mapArray[0].length;
 	}
+	
+	public Viewport getViewport() {
+		return vp;
+	}
 }

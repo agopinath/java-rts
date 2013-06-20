@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.cyanojay.rts.ai.PathFinder;
+import org.cyanojay.rts.ai.steering.FollowPath;
 import org.cyanojay.rts.ai.steering.Pathway;
+import org.cyanojay.rts.ai.steering.Separation;
 import org.cyanojay.rts.ai.steering.SteeringManager;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
@@ -25,11 +27,11 @@ public class Swarm implements Iterable<Soldier> {
 	private SteeringManager steer;
 	private Soldier leader;
 	
-	public Swarm(Map m, Viewport view) {
+	public Swarm(Map m) {
 		units = new HashSet<Soldier>();
 		steer = new SteeringManager();
 		map = m;
-		vp = view;
+		vp = map.getViewport();
 		leader = null;
 	}
 
@@ -59,7 +61,9 @@ public class Swarm implements Iterable<Soldier> {
 	
 	public void setOverallPath(Vector2f[] p) { // sets overall path to the destination
 		this.path = new Pathway(p);
-		steer.setPath(path);
+		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.7f);
+		steer.addBehavior(new Separation(this), 0.3f);
+		
 		leader.setCurrPath(path);
 		for(Soldier s : units) {
 			s.setState(UnitState.MOVING);
@@ -86,11 +90,20 @@ public class Swarm implements Iterable<Soldier> {
 	}
 	
 	private void updateUnit(Soldier s) {
-		Vector2f steerForce = steer.steerAlongPath(s.getPosition(), s.getVelocity(), 20f, Soldier.MAX_STEER, 1, s.getCurrPath());
+		Vector2f steerForce = steer.steer(s.getPosition(), s.getVelocity(), s.getCurrPath());
 		s.setVelocity(Vmath.setLength(Vmath.add(s.getVelocity(), steerForce), Soldier.MOVE_SPEED));
 		s.setPosition(Vmath.add(s.getPosition(), s.getVelocity()));
 		
-		if(s.atEndOfPath()) {
+		if(s.nearingEndOfPath() && !s.getCurrPath().equals(path)) {
+			if(s.equals(leader) || s.getCurrPath().equals(path)) {
+				float dist = Vmath.distBetween(s.getPosition(), s.getCurrPath().getPathVectorAt(s.getCurrPath().getPathSize()-1));
+				s.setVelocity(Vmath.mult(s.getVelocity(), (dist / Soldier.SLOWING_RAD)));
+				s.setState(UnitState.ARRIVED);
+				
+			} else {
+				s.setCurrPath(path);
+			}
+		} else if(s.atEndOfPath()) {
 			if(s.equals(leader) || s.getCurrPath().equals(path)) {
 				s.setVelocity(Vector2f.ZERO);
 				s.setState(UnitState.ARRIVED);
@@ -105,9 +118,9 @@ public class Swarm implements Iterable<Soldier> {
 		}
 	}
 
-	public void moveToDestination(Viewport vp, Soldier currLeader, int[] dest) {
+	public void moveToDestination(Soldier currLeader, int[] dest) {
 		leader = currLeader;
-		int[] start = map.screenToMap((int)leader.getPosition().x+vp.getOffsetX(), (int)leader.getPosition().y+vp.getOffsetY());
+		int[] start = GameUtil.unitToMapLoc(leader, map, vp);
 		Vector2f[] leaderPath = calcPath(start, dest);
 		for(Soldier s : units) {
 			if(s.equals(leader)) continue;
@@ -115,7 +128,7 @@ public class Swarm implements Iterable<Soldier> {
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1);
 			
-			int[] currStart = map.screenToMap((int)s.getPosition().x+vp.getOffsetX(), (int)s.getPosition().y+vp.getOffsetY());
+			int[] currStart = GameUtil.unitToMapLoc(s, map, vp);
 			Vector2f[] soldierPath = null;
 			if(d1 < d2) {
 				soldierPath = calcPath(currStart, dest);

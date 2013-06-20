@@ -43,8 +43,6 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		};
 		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
-		initEntities();
-		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
 	}
@@ -52,6 +50,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	public void initPostAdd() { // to be called by parent container after it has been added
 		initViewport();
 		map.setViewport(vp);
+		initEntities();
 	}
 	
 	public void initViewport() {
@@ -63,11 +62,11 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	}
 	
 	public void initEntities() {
-		swarm = new Swarm(map, vp);
+		swarm = new Swarm(map);
 		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
 		swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
-		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
-		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
+		//swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
+		//swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 		//sols.add(new Soldier(new Vector2f(256, 512), Color.RED));
 	}
 	
@@ -201,7 +200,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 				if(e.getButton() == MouseEvent.BUTTON3) {
 					Soldier leader = swarm.getLeader(e.getX(), e.getY());
 					int[] dest = map.screenToMap(e.getX(), e.getY());
-					swarm.moveToDestination(vp, leader, dest);
+					swarm.moveToDestination(leader, dest);
 					
 					paintImmediately(0, 0, getWidth(), getHeight());
 					

@@ -11,12 +11,15 @@ import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
 import org.cyanojay.rts.world.Drawable;
+import org.cyanojay.rts.world.map.Terrain;
 
 
 public class Soldier implements Drawable {
 	public final static float MOVE_SPEED = 5f;
 	public final static float MAX_STEER = 2f;
 	public final static float SIZE = 12f;
+	public final static float SLOWING_RAD = 1.2f*Terrain.IMG_HEIGHT;
+	public final static float STOPPING_RAD = 2f*Terrain.IMG_HEIGHT;
 	
 	private Vector2f position;
 	private Vector2f velocity;
@@ -87,9 +90,14 @@ public class Soldier implements Drawable {
 		this.currPath = currPath;
 	}
 	
+	public boolean nearingEndOfPath() {
+		if(currPath == null) return false;
+		return Vmath.distBetween(position, currPath.getPathVectorAt(currPath.getPathSize()-1)) < SLOWING_RAD;
+	}
+	
 	public boolean atEndOfPath() {
 		if(currPath == null) return false;
-		return Vmath.distBetween(position, currPath.getPathVectorAt(currPath.getPathSize()-1)) < 80;
+		return Vmath.distBetween(position, currPath.getPathVectorAt(currPath.getPathSize()-1)) < STOPPING_RAD;
 	}
 	
 	public boolean equals(Object other) {
