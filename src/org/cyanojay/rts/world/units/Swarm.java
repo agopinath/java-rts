@@ -15,6 +15,7 @@ import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
 import org.cyanojay.rts.world.map.Map;
 import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.TerrainType;
 import org.cyanojay.rts.world.map.Viewport;
 
 import com.agopinath.lthelogutil.Fl;
@@ -60,8 +61,8 @@ public class Swarm implements Iterable<Soldier> {
 	
 	public void setOverallPath(Vector2f[] p) { // sets overall path to the destination
 		this.path = new Pathway(p);
-		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.7f);
-		steer.addBehavior(new Separation(this), 0.3f);
+		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.75f);
+		steer.addBehavior(new Separation(this), 0.25f);
 		
 		leader.setCurrPath(path);
 		for(Soldier s : units) {
@@ -87,24 +88,14 @@ public class Swarm implements Iterable<Soldier> {
 		s.setVelocity(Vmath.setLength(Vmath.add(s.getVelocity(), steerForce), Soldier.MOVE_SPEED));
 		s.setPosition(Vmath.add(s.getPosition(), s.getVelocity()));
 		
-		if(s.nearingEndOfPath() && !s.getCurrPath().equals(path)) {
-			if(s.equals(leader) || s.getCurrPath().equals(path)) {
-				float dist = Vmath.distBetween(s.getPosition(), s.getCurrPath().getPathVectorAt(s.getCurrPath().getPathSize()-1));
-				s.setVelocity(Vmath.mult(s.getVelocity(), (dist / Soldier.SLOWING_RAD)));
-				s.setState(UnitState.ARRIVED);
-				
-			} else {
-				s.setCurrPath(path);
-			}
-		} else if(s.atEndOfPath()) {
-			if(s.equals(leader) || s.getCurrPath().equals(path)) {
+		if(s.atEndOfPath()) {
+			if(map.getTerrainAt(map.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y)).getType() == TerrainType.DIRT) {
+				Vector2f newVel = new Vector2f((float)Math.random(), (float)Math.random());
+				newVel = Vmath.setLength(newVel, Soldier.MOVE_SPEED);
+				s.setVelocity(newVel);
+			} else if(s.equals(leader) || s.getCurrPath().equals(path)) {
 				s.setVelocity(Vector2f.ZERO);
 				s.setState(UnitState.ARRIVED);
-				/*for(Soldier other : units) {
-					if(s.getState() != UnitState.ARRIVED || s.equals(other)) continue;
-					
-				}
-				s.setPosition(new Vector2f())*/
 			} else {
 				s.setCurrPath(path);
 			}
@@ -112,12 +103,17 @@ public class Swarm implements Iterable<Soldier> {
 	}
 
 	public void moveToDestination(int[] dest) {
-		int[] start = GameUtil.unitToMapLoc(leader, map, vp);
+		if(leader == null) return;
+		int[] start = map.viewportToMap((int)leader.getPosition().x, (int)leader.getPosition().y);
 		Vector2f[] leaderPath = calcPath(start, dest);
+		if(leaderPath == null) return;
 		for(Soldier s : units) {
 			if(s.equals(leader)) continue;
-			int[] currStart = GameUtil.unitToMapLoc(s, map, vp);
-			
+			int[] currStart = map.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y);
+			if(currStart[0] == start[0] && currStart[1] == start[1]) {
+				s.setCurrPath(path);
+				continue;
+			}
 			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1]);
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1);
@@ -127,8 +123,11 @@ public class Swarm implements Iterable<Soldier> {
 				soldierPath = calcPath(currStart, dest);
 				s.setCurrPath(new Pathway(soldierPath));
 			} else {
-				soldierPath = calcPath(currStart, map.screenToMap((int)t1.x+vp.getOffsetX(), (int)t1.y+vp.getOffsetY()));
-				s.setCurrPath(new Pathway(soldierPath));
+				int[] t1loc = map.viewportToMap((int)t1.x, (int)t1.y);
+				if(!t1loc.equals(currStart))
+					s.setCurrPath(new Pathway(calcPath(currStart, t1loc)));
+				else
+					s.setCurrPath(path);
 			}
 		}
 		
@@ -151,6 +150,7 @@ public class Swarm implements Iterable<Soldier> {
 	private Vector2f[] calcPath(int[] startLoc, int[] destLoc) {
 		PathFinder finder = new PathFinder();
 		ArrayList<Terrain> pathList = finder.findPath(map.getTerrainAt(startLoc), map.getTerrainAt(destLoc), map);
+		if(pathList == null) return null;
 		Vector2f[] vPath = new Vector2f[pathList.size()];
 		for(int i = 0; i < pathList.size(); i++) {
 			Terrain t = pathList.get(i);

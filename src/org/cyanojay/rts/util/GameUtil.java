@@ -126,10 +126,6 @@ public class GameUtil {
 		terr.setImage(dest);
 	}
 	
-	public static int[] unitToMapLoc(Soldier s, Map m, Viewport vp) {
-		return m.screenToMap((int)s.getPosition().x+vp.getOffsetX(), (int)s.getPosition().y+vp.getOffsetY());
-	}
-	
 	private static long curUID = 0;
 	public static synchronized long getUID() {
 		return curUID++;

@@ -18,8 +18,8 @@ public class Soldier implements Drawable {
 	public final static float MOVE_SPEED = 5f;
 	public final static float MAX_STEER = 2f;
 	public final static float SIZE = 12f;
-	public final static float SLOWING_RAD = 1.2f*Terrain.IMG_HEIGHT;
-	public final static float STOPPING_RAD = 2f*Terrain.IMG_HEIGHT;
+	public final static float SLOWING_RAD = 3f*Terrain.IMG_HEIGHT;
+	public final static float STOPPING_RAD = 1.2f*Terrain.IMG_HEIGHT;
 	
 	private Vector2f position;
 	private Vector2f velocity;

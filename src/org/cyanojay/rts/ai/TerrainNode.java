@@ -11,11 +11,7 @@ public class TerrainNode implements Comparable<TerrainNode> {
 	}
 	
 	public boolean equals(Object other) {
-		TerrainNode otherNode = (TerrainNode) other;
-		if(otherNode.baseBlock.getRow() == this.baseBlock.getRow() &&
-			otherNode.baseBlock.getCol() == this.baseBlock.getCol()) return true;
-		
-		return false;
+		return baseBlock.equals(((TerrainNode) other).baseBlock);
 	}
 
 	public int hashCode() {
@@ -24,5 +20,9 @@ public class TerrainNode implements Comparable<TerrainNode> {
 	
     public int compareTo(TerrainNode otherNode) {
         return (int) (this.f_score - otherNode.f_score);
+    }
+    
+    public String toString() {
+    	return "[" + baseBlock.getRow() + ", " + baseBlock.getCol() + "]";
     }
 }

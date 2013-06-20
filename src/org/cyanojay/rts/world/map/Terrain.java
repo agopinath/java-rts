@@ -83,4 +83,11 @@ public class Terrain implements Drawable {
 	public void setCol(int col) {
 		this.col = col;
 	}
+	
+	public boolean equals(Object other) {
+		if(((Terrain)other).row == row &&
+				((Terrain)other).col == col) return true;
+		
+		return false;
+	}
 }
