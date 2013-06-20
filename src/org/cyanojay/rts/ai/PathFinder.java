@@ -11,6 +11,8 @@ import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.world.map.Map;
 import org.cyanojay.rts.world.map.Terrain;
 
+import com.agopinath.lthelogutil.Fl;
+
 
 
 public class PathFinder {
@@ -34,12 +36,17 @@ public class PathFinder {
 	}
 	
 	public ArrayList<Terrain> getMovePath(int[] startLoc, int[] destLoc, Map map) {
+		if(startLoc.equals(destLoc)) return null;
 		Terrain start = map.getTerrainAt(startLoc[0],startLoc[1]);
 		Terrain dest = map.getTerrainAt(destLoc[0], destLoc[1]);
 		return findPath(start, dest, map);
 	}
 	
 	public ArrayList<Terrain> findPath(Terrain start, Terrain goal, Map map) {
+		if(start.equals(goal)) {
+			Fl.err("Start == goal");
+			return null;
+		}
 		pathData = new ArrayList<Terrain>();
 		
 		closedSet = new HashSet<TerrainNode>();
@@ -52,7 +59,7 @@ public class PathFinder {
 		startNode.g_score = 0;
 		startNode.f_score = startNode.g_score + GameUtil.pathFinderHeuristic(startNode, goalNode);
 		openSet.offer(startNode);
-		cameFrom.put(startNode, null);
+		//cameFrom.put(startNode, null);
 		TerrainNode lastNode = null;
 		TerrainNode current = startNode;
 		
@@ -107,9 +114,15 @@ public class PathFinder {
 	
 	private ArrayList<Terrain> reconstructPath(HashMap<TerrainNode, TerrainNode> parents, TerrainNode goal) {
 		TerrainNode currNode = goal;
+		TerrainNode lastNode = currNode;
 		while(currNode != null) {
 			pathData.add(currNode.baseBlock);
 			currNode = parents.get(currNode);
+			/*if(currNode != null && lastNode.equals(currNode)) {
+				Fl.og("Same: " + parents.get(currNode));
+				continue;
+			}
+			lastNode = currNode;*/
 		}
 		
 		Collections.reverse(pathData); // reverse the list because it is currently ordered from the goal to the start

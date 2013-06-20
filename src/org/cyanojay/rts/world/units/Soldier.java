@@ -18,8 +18,8 @@ public class Soldier implements Drawable {
 	public final static float MOVE_SPEED = 5f;
 	public final static float MAX_STEER = 2f;
 	public final static float SIZE = 12f;
-	public final static float SLOWING_RAD = 1.2f*Terrain.IMG_HEIGHT;
-	public final static float STOPPING_RAD = 2f*Terrain.IMG_HEIGHT;
+	public final static float SLOWING_RAD = 3f*Terrain.IMG_HEIGHT;
+	public final static float STOPPING_RAD = 1.2f*Terrain.IMG_HEIGHT;
 	
 	private Vector2f position;
 	private Vector2f velocity;
@@ -40,9 +40,9 @@ public class Soldier implements Drawable {
 	public void draw(Graphics2D g, int xOff, int yOff) {
 		g.setColor(color);
 		g.fillOval((int)(body.x + xOff), (int)(body.y + yOff), (int)body.width, (int)body.height);
-		/*Vector2f velocityScale = Vmath.mult(velocity, 4f);
+		Vector2f velocityScale = Vmath.mult(velocity, 4f);
 		g.setColor(Color.GREEN);
-		g.drawLine((int)(xOff+position.x+SIZE/2), (int)(yOff+position.y+SIZE/2), (int)(xOff+position.x+velocity.x+velocityScale.x), (int)(yOff+position.y+velocity.y+velocityScale.y));*/
+		g.drawLine((int)(xOff+position.x+SIZE/2), (int)(yOff+position.y+SIZE/2), (int)(xOff+position.x+velocity.x+velocityScale.x), (int)(yOff+position.y+velocity.y+velocityScale.y));
 	}
 	
 	public Vector2f getPosition() {

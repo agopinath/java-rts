@@ -162,6 +162,13 @@ public class Map {
 		return new int[] {row, col};
 	}
 	
+	public int[] viewportToMap(int x, int y) {
+		int row = y / Terrain.IMG_HEIGHT;
+		int col = x / Terrain.IMG_WIDTH;
+		
+		return new int[] {row, col};
+	}
+	
 	public int[] mapToScreen(int row, int col) {
 		Terrain t = mapArray[row][col];
 		return new int[] {t.getX() - ((vp != null) ? vp.getOffsetX() : 0), t.getY() - ((vp != null) ? vp.getOffsetY() : 0)};
