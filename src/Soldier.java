@@ -8,15 +8,12 @@ import java.util.Collections;
 public class Soldier {
 	private Vector2f position;
 	private Vector2f velocity;
-	private final static float MAX_SPEED = 5f;
-	private final static float MAX_STEER = 1f;
+	private final static float MOVE_SPEED = 5f;
+	private final static float MAX_STEER = 2f;
 	private Color color;
 	private Ellipse2D.Float body;
-	private PolylinePathway path;
-	Vector2f futurePos;
-	Vector2f onPath;
-	Vector2f pathTarg;
-	private int pathRad;
+	private Pathway path;
+	private SteeringManager steer;
 	
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
@@ -24,6 +21,8 @@ public class Soldier {
 		body = new Ellipse2D.Float(position.x, position.y, 12, 12);
 		
 		velocity = new Vector2f();
+		
+		steer = new SteeringManager(null);
 	}
 	
 	public void draw(Graphics2D g) {
@@ -51,70 +50,29 @@ public class Soldier {
 	
 	public void update() {
 		if(path == null) return;
-		Vector2f steering = followPath(20f, 1, pathRad);
+		Vector2f steering = steer.steerAlongPath(position, velocity, 20, 1, 32);
 		applySteeringForces(steering);
-	}
-	
-	// predictionTime specifies extent of future prediction
-	// direction (should be either +1 or -1) specifies direction along path (forward or backward, respectively)
-	private Vector2f followPath(float predictionTime, int direction, float pathrad) { 
-		float pathDistOffset = Vmath.len(velocity) * predictionTime * direction;		
-		futurePos = getFuturePosition(predictionTime);
-		
-		float nowPathDist = path.mapPointToPathDistance(position);
-		float futurePathDist = path.mapPointToPathDistance(futurePos);
-		
-		boolean rightway = ((pathDistOffset > 0) ?
-			                (nowPathDist < futurePathDist) :
-			                (nowPathDist > futurePathDist));
-		
-		onPath = path.mapPointToPath(futurePos);
-		float outside = (float) (PolylinePathway.distBetween(onPath, futurePos) - pathrad);
-		
-		if(outside < 0 && rightway) {
-			return Vector2f.ZERO;
-		} else {
-			float targetPathDist = nowPathDist + pathDistOffset;
-			pathTarg = path.mapDistanceToPoint(targetPathDist);
-			return seek(pathTarg);
-		}
 	}
 	
 	private Vector2f getFuturePosition(float predictionTime) {
 		return Vmath.add(position, Vmath.mult(velocity, predictionTime));
 	}
-
-	private Vector2f seek(Vector2f targetPos) {
-		Vector2f desiredVelocity = Vmath.sub(targetPos, position);
-		if(Vmath.len(velocity) < MAX_STEER)
-			return Vmath.mult(Vmath.normalize(Vmath.sub(desiredVelocity, velocity)), MAX_STEER);
-		
-		return Vmath.truncate(Vmath.sub(desiredVelocity, velocity), MAX_STEER);
-	}
 	
 	private void applySteeringForces(Vector2f steering) {
-		velocity = Vmath.setLength(Vmath.add(velocity, steering), MAX_SPEED);
+		velocity = Vmath.setLength(Vmath.add(velocity, steering), MOVE_SPEED);
 		position = getFuturePosition(1f);
 		
 		setPosition(position);
 		
-		if(PolylinePathway.distBetween(position, path.getPathPositionAt(path.getPathLength()-1)) < 16) {
+		if(Vmath.distBetween(position, path.getPathVectorAt(path.getPathSize()-1)) < 16) {
 			velocity = Vector2f.ZERO;
 			path = null;
 		}
 	}
-	
-	/*public PolylinePathway getPath() {
-		return path;
-	}*/
 
-	public void setPath(Vector2f[] p, int pathrad) {
-		//velocity = p[0].sub(position);
-		//velocity = velocity.truncate(MAX_SPEED);
-		
-		this.pathRad = pathrad;
-		
+	public void setPath(Vector2f[] p) {
 		Collections.reverse(Arrays.asList(p));
-		this.path = new PolylinePathway(p);
+		this.path = new Pathway(p);
+		steer.setPath(path);
 	}
 }

@@ -42,4 +42,12 @@ public class Vmath {
 	public static Vector2f setLength(Vector2f v, float len) {
 		return mult(normalize(v), len);
 	}
+	
+	public static Vector2f interpolate(float ratio, Vector2f v0, Vector2f v1) {
+		return Vmath.add(v0, Vmath.mult(Vmath.sub(v1, v0), ratio));
+	}
+
+	public static float distBetween(Vector2f pos1, Vector2f pos2) {
+		return (float) Math.sqrt((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y));
+	}
 }
