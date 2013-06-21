@@ -25,6 +25,7 @@ import com.agopinath.lthelogutil.Fl;
 
 public class GameFrame extends JFrame implements KeyListener, MouseListener, MouseMotionListener {
 	private BufferStrategy buffStrategy;
+	private GameLoop gameLoop;
 	private Map map;
 	private Viewport vp;
 	private Swarm swarm;
@@ -54,8 +55,9 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 		buffStrategy = getBufferStrategy();
 		setIgnoreRepaint(true);
 		
-		Thread gameLoop = new Thread(new GameLoop());
-		gameLoop.start();
+		gameLoop = new GameLoop();
+		Thread gameLoopT = new Thread(gameLoop);
+		gameLoopT.start();
 	}
 	
 	public void initViewport() {
@@ -76,7 +78,7 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 	
 	private class GameLoop implements Runnable {
 		private boolean gameRunning = true;
-		private boolean gamePaused = false;
+		private volatile boolean gamePaused = false;
 		private static final float GAME_FPS = 30f;
 		private static final float TIME_BETWEEN_UPDATES = 1000000000 / GAME_FPS;
 		private static final int MAX_UPDATES_BEFORE_RENDER = 1;
@@ -133,6 +135,12 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 
 						now = System.nanoTime();
 					}
+				} else {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -143,6 +151,10 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 
 		private void updateEntities() {
 			swarm.update();
+		}
+		
+		private void togglePause() {
+			gamePaused = !gamePaused;
 		}
 	}
 	
@@ -191,6 +203,9 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 			case KeyEvent.VK_DOWN:
 			case KeyEvent.VK_S:
 				vp.shiftVertically(1);
+				break;
+			case KeyEvent.VK_P:
+				gameLoop.togglePause();
 				break;
 			case KeyEvent.VK_F12:
 				map.resetMap();
