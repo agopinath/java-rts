@@ -25,7 +25,7 @@ public class Separation implements SteeringBehavior {
 			if ((d > 0) && (d < DESIRED_SEP)) {
 				// Calculate vector pointing away from neighbor
 				Vector2f diff = Vmath.sub(position, other.getPosition());
-				diff = Vmath.normalize(diff);
+				diff.normalize();
 				diff = Vmath.mult(diff, 100 / d); // Weight by distance
 				steer = Vmath.add(steer, diff);
 				count++;
@@ -36,7 +36,7 @@ public class Separation implements SteeringBehavior {
 			steer = Vmath.mult(steer, 1 / (float) count);
 		}
 		
-		if (Vmath.len(steer) > 0) {
+		if (steer.len() > 0) {
 			Vmath.setLength(steer, Soldier.MAX_STEER); 
 		}
 

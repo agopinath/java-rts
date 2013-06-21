@@ -27,7 +27,7 @@ public class Pathway {
 			path[i] = p[i];
 	        if (i > 0) {
 	            normals[i] = Vmath.sub(path[i], path[i-1]);
-	            lengths[i] = Vmath.len(normals[i]);
+	            lengths[i] = normals[i].len();
 	            normals[i] = Vmath.mult(normals[i], 1/lengths[i]);  // find the normalized vector parallel to the segment
 	            
 	            total2DPathLength += lengths[i];

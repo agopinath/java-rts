@@ -1,6 +1,6 @@
 package org.cyanojay.rts.util.vector;
 
-public class Vector2f {
+public class Vector2f  {
 	public final static Vector2f ZERO = new Vector2f();
 	
 	public float x, y;
@@ -18,13 +18,17 @@ public class Vector2f {
 		return String.format("[%.3f, %.3f]; len = %.3f", x, y, Vmath.len(this));
 	}
 	
-	/*public void normalize() {
+	public void normalize() {
 		Vector2f v = Vmath.normalize(this);
 		x = v.x;
 		y = v.y;
 	}
 	
-	public float dot(Vector2f other) {
+	public float len() {
+		return Vmath.len(this);
+	}
+	
+	/*public float dot(Vector2f other) {
 		return (this.x * other.x + this.y * other.y);
 	}
 	
@@ -44,7 +48,5 @@ public class Vector2f {
 		return Vmath.truncate(this, maxLen);
 	}
 	
-	public float len() {
-		return Vmath.len(this);
-	}*/
+	*/
 }

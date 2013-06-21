@@ -22,7 +22,7 @@ public class FollowPath implements SteeringBehavior {
 	@Override
 	public Vector2f getSteerForce(Vector2f pos, Vector2f vel, Object... args) {
 		path = (Pathway) args[0];
-		float pathDistOffset = Vmath.len(vel) * predictionTime * direction;
+		float pathDistOffset = vel.len() * predictionTime * direction;
 		Vector2f futurePos = getFuturePosition(pos, vel, predictionTime);
 
 		float nowPathDist = path.mapPointToPathDistance(pos);
