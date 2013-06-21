@@ -41,6 +41,7 @@ public class Vmath {
 	}
 	
 	public static Vector2f setLength(Vector2f v, float len) {
+		if(v.x == 0f && v.y == 0f) return v;
 		return mult(normalize(v), len);
 	}
 	

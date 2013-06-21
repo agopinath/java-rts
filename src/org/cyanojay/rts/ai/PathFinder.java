@@ -37,10 +37,10 @@ public class PathFinder {
 	}
 	
 	public ArrayList<TerrainNode> findPath(TerrainNode start, TerrainNode goal, PathfindingMap map) {
-		/*if(start.equals(goal)) {
+		if(start.equals(goal)) {
 			Fl.err("Start == goal");
 			return null;
-		}*/
+		}
 		pathData = new ArrayList<TerrainNode>();
 		
 		closedSet = new HashSet<TransientTerrainNode>();
@@ -68,13 +68,14 @@ public class PathFinder {
 			openSet.remove(current);		
 			closedSet.add(current);
 			TerrainNode[] surroundings = map.getSurroundings(current.parent.row, current.parent.col);
+			TransientTerrainNode ttnode = null;
 			
 			int idx = 0;
 			float moveCostToNeighbor;
 			for(TerrainNode neighbor : surroundings) {
 				if(neighbor == null) continue;
-				TransientTerrainNode ttnode = neighbor.toTransient();
-				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor) || 
+				ttnode = neighbor.toTransient();
+				if(closedSet.contains(ttnode) || GameUtil.isBlocked(neighbor) || 
 					!GameUtil.isValidLocation(map, current.parent.row, current.parent.col, 
 					neighbor.row, neighbor.col, false)) continue;
 					
@@ -85,7 +86,7 @@ public class PathFinder {
 				}
 				
 				float tentativeGScore = current.g_score + moveCostToNeighbor;
-				if (!openSet.contains(neighbor)|| tentativeGScore < ttnode.g_score) {
+				if (!openSet.contains(ttnode)|| tentativeGScore < ttnode.g_score) {
 					cameFrom.put(ttnode, current);
 					ttnode.g_score = tentativeGScore;
 					ttnode.f_score = ttnode.g_score + GameUtil.pathFinderHeuristic(ttnode.parent, goalNode.parent);

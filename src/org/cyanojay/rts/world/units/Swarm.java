@@ -63,6 +63,8 @@ public class Swarm implements Iterable<Soldier> {
 	
 	public void setOverallPath(TerrainNode[] p) { // sets overall path to the destination
 		this.path = new Pathway(p);
+		
+		steer.clearBehaviors();
 		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.75f);
 		steer.addBehavior(new Separation(this), 0.25f);
 		
@@ -160,6 +162,6 @@ public class Swarm implements Iterable<Soldier> {
 			GameUtil.changeBright(pathList.get(i), moveMap, 1.4f);
 		}
 		
-		return (TerrainNode[]) pathList.toArray();
+		return pathList.toArray(new TerrainNode[0]);
 	}
 }

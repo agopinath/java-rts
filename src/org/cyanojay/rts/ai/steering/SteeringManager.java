@@ -45,4 +45,9 @@ public class SteeringManager {
 	public static Vector2f applySteeringToVelocity(Vector2f currVelocity, Vector2f steering, float moveSpeed) {
 		return Vmath.setLength(Vmath.add(currVelocity, steering), moveSpeed);
 	}
+
+	public void clearBehaviors() {
+		behaviors.clear();
+		weights.clear();
+	}
 }

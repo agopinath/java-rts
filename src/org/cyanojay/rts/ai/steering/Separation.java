@@ -8,7 +8,7 @@ import org.cyanojay.rts.world.units.Swarm;
 import com.agopinath.lthelogutil.Fl;
 
 public class Separation implements SteeringBehavior {
-	public static final float DESIRED_SEP = 48.0f;
+	public static final float DESIRED_SEP = 16.0f;
 	private Swarm swarm;
 	public Separation(Swarm swarm) {
 		this.swarm = swarm;
@@ -26,7 +26,7 @@ public class Separation implements SteeringBehavior {
 				// Calculate vector pointing away from neighbor
 				Vector2f diff = Vmath.sub(position, other.getPosition());
 				diff = Vmath.normalize(diff);
-				diff = Vmath.mult(diff, 100 / d); // Weight by distance
+				diff = Vmath.mult(diff, 1 / d); // Weight by distance
 				steer = Vmath.add(steer, diff);
 				count++;
 			}
