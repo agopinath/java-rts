@@ -74,16 +74,9 @@ public class Map {
 	private void assignAssets() {
 		for (int row = 0; row < mapArray.length; row++) {
 			for (int col = 0; col < mapArray[row].length; col++) {
-				switch (mapArray[row][col].getType()) { // set the images of mapArray elements
-					case GRASS:
-						mapArray[row][col].setBaseImage(terrainImgs.get(0).get((int) (Math.random() * terrainImgs.size())));
-						break;
-					case DIRT:
-						mapArray[row][col].setBaseImage(terrainImgs.get(1).get((int) (Math.random() * terrainImgs.size())));
-						break;
-					default:
-						Fl.err("No terrain of that type");
-				}
+				TerrainType type = mapArray[row][col].getType();
+				int randImgIdx = (int) (Math.random() * terrainImgs.get(type.ordinal()).size());
+				mapArray[row][col].setBaseImage(terrainImgs.get(type.ordinal()).get(randImgIdx));
 			}
 		}
 		
