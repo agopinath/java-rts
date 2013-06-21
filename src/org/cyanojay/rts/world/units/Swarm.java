@@ -1,6 +1,7 @@
 package org.cyanojay.rts.world.units;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -124,7 +125,7 @@ public class Swarm implements Iterable<Soldier> {
 				s.setCurrPath(new Pathway(soldierPath));
 			} else {
 				int[] t1loc = map.viewportToMap((int)t1.x, (int)t1.y);
-				if(!t1loc.equals(currStart))
+				if(!(Arrays.equals(t1loc, currStart)))
 					s.setCurrPath(new Pathway(calcPath(currStart, t1loc)));
 				else
 					s.setCurrPath(path);

@@ -45,7 +45,7 @@ public class PathFinder {
 	public ArrayList<Terrain> findPath(Terrain start, Terrain goal, Map map) {
 		if(start.equals(goal)) {
 			Fl.err("Start == goal");
-			return null;
+			return new ArrayList<Terrain>();
 		}
 		pathData = new ArrayList<Terrain>();
 		
