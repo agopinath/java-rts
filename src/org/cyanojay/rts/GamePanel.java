@@ -186,6 +186,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 				map.resetMap();
 				drawPath = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				System.exit(0);
+				break;
 		}
 		
 		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
