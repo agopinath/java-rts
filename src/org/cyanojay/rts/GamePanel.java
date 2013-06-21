@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -33,7 +34,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	private boolean drawPath;
 	
 	public GamePanel() {
-		setPreferredSize(new Dimension(800, 600));
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		setPreferredSize(d);
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);

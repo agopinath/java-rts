@@ -181,7 +181,7 @@ public class Swarm implements Iterable<Soldier> {
 			Terrain t = pathList.get(i);
 			
 			vPath[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
-			GameUtil.changeBright(t, map, 1.4f);
+			//GameUtil.changeBright(t, map, 1.4f);
 		}
 		
 		return vPath;

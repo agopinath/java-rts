@@ -40,9 +40,9 @@ public class Soldier implements Drawable {
 	public void draw(Graphics2D g, int xOff, int yOff) {
 		g.setColor(color);
 		g.fillOval((int)(position.x+xOff-SIZE/2), (int)(position.y+yOff-SIZE/2), (int)SIZE, (int)SIZE);
-		Vector2f velocityScale = Vmath.mult(velocity, 4f);
-		g.setColor(Color.GREEN);
-		g.drawLine((int)(xOff+position.x), (int)(yOff+position.y), (int)(xOff+position.x+velocity.x+velocityScale.x), (int)(yOff+position.y+velocity.y+velocityScale.y));
+		//Vector2f velocityScale = Vmath.mult(velocity, 4f);
+		//g.setColor(Color.GREEN);
+		//g.drawLine((int)(xOff+position.x), (int)(yOff+position.y), (int)(xOff+position.x+velocity.x+velocityScale.x), (int)(yOff+position.y+velocity.y+velocityScale.y));
 	}
 	
 	public Vector2f getPosition() {

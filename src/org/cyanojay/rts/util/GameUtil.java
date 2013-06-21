@@ -121,7 +121,7 @@ public class GameUtil {
 		return !invalid;
 	}
 	 
-	public static void changeBright(Terrain terr, Map map, float factor) {
+	/*public static void changeBright(Terrain terr, Map map, float factor) {
 		BufferedImage img = (BufferedImage) terr.getImage();
 		BufferedImage dest = GameUtil.deepCopy(img);
 		RescaleOp rescaleOp = new RescaleOp(factor, 15, null);
@@ -129,7 +129,7 @@ public class GameUtil {
 		rescaleOp.filter(img, dest);
 
 		terr.setImage(dest);
-	}
+	}*/
 	
 	private static long curUID = 0;
 	public static synchronized long getUID() {
