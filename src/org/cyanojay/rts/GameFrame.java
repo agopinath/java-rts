@@ -3,39 +3,37 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferStrategy;
 import java.io.File;
-import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.cyanojay.rts.ai.PathFinder;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.world.map.Map;
-import org.cyanojay.rts.world.map.Terrain;
 import org.cyanojay.rts.world.map.Viewport;
 import org.cyanojay.rts.world.units.Soldier;
 import org.cyanojay.rts.world.units.Swarm;
 
 import com.agopinath.lthelogutil.Fl;
 
-public class GamePanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
+public class GameFrame extends JFrame implements KeyListener, MouseListener, MouseMotionListener {
+	private BufferStrategy buffStrategy;
 	private Map map;
 	private Viewport vp;
 	private Swarm swarm;
 	private Vector2f[] path;
 	private boolean drawPath;
 	
-	public GamePanel() {
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		setPreferredSize(d);
+	public GameFrame() {
+		//Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		//setPreferredSize(d);
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -43,20 +41,25 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		File[] mapAssets = new File[] {
 			new File("assets/tiles/grass/"), new File("assets/tiles/dirt/")
 		};
-		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 		
-		Thread gameLoop = new Thread(new GameLoop());
-		gameLoop.start();
+		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
 	}
 	
 	public void initPostAdd() { // to be called by parent container after it has been added
 		initViewport();
 		map.setViewport(vp);
 		initEntities();
+		
+		createBufferStrategy(2);
+		buffStrategy = getBufferStrategy();
+		setIgnoreRepaint(true);
+		
+		Thread gameLoop = new Thread(new GameLoop());
+		gameLoop.start();
 	}
 	
 	public void initViewport() {
-		Dimension viewArea = getPreferredSize();
+		Dimension viewArea = getSize();
 		int[] rowcol = map.screenToMap(0 + viewArea.width, 0 + viewArea.height); // get row/col of bottom right corner of viewport
 		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1]);
 		
@@ -101,8 +104,18 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					if (now - lastUpdateTime > TIME_BETWEEN_UPDATES) {
 						lastUpdateTime = now - TIME_BETWEEN_UPDATES;
 					}
-
-					repaint();
+					
+					Graphics2D g = null;
+					try {
+						g = (Graphics2D) buffStrategy.getDrawGraphics();
+						render(g);
+					} finally {
+						g.dispose();
+					}
+					
+					if(!buffStrategy.contentsLost()) {
+						buffStrategy.show();
+					}
 					
 					lastRenderTime = now;
 
@@ -133,10 +146,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		}
 	}
 	
-	public void paintComponent(Graphics gr) {
-		super.paintComponent(gr);
-		
-		Graphics2D g = (Graphics2D) gr;
+	public void render(Graphics2D g) {
 		drawMap(g);
 		//drawPath(g);
 		drawEntities(g);
@@ -213,7 +223,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					if(GameUtil.isBlocked(map, dest)) return;
 					swarm.moveToDestination(dest);
 					
-					paintImmediately(0, 0, getWidth(), getHeight());
+					//paintImmediately(0, 0, getWidth(), getHeight());
 					
 					drawPath = true;
 				} else {
