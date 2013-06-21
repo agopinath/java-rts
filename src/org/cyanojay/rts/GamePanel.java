@@ -197,6 +197,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 			@Override
 			public void run() {
 				if(e.getButton() == MouseEvent.BUTTON3) {
+					map.resetMap();
+					
 					swarm.findLeader(e.getX(), e.getY());
 					int[] dest = map.screenToMap(e.getX(), e.getY());
 					swarm.moveToDestination(dest);
