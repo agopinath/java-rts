@@ -1,6 +1,6 @@
 package org.cyanojay.rts.util.vector;
 
-public class Vector2f  {
+public class Vector2f implements Cloneable {
 	public final static Vector2f ZERO = new Vector2f();
 	
 	public float x, y;
@@ -28,6 +28,9 @@ public class Vector2f  {
 		return Vmath.len(this);
 	}
 	
+	public Vector2f clone() {
+		return new Vector2f(this.x, this.y);
+	}
 	/*public float dot(Vector2f other) {
 		return (this.x * other.x + this.y * other.y);
 	}
