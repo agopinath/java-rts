@@ -10,6 +10,10 @@ public class TerrainNode implements Comparable<TerrainNode> {
 		this.baseBlock = block;
 	}
 	
+	public TerrainNode() {
+		
+	}
+
 	public boolean equals(Object other) {
 		return baseBlock.equals(((TerrainNode) other).baseBlock);
 	}
