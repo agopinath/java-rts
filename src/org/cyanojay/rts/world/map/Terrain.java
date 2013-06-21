@@ -8,6 +8,7 @@ import org.cyanojay.rts.world.Drawable;
 public class Terrain implements Drawable {
 	public static int IMG_HEIGHT;
 	public static int IMG_WIDTH;
+	public static float AVOID_RADIUS;
 	
 	private Image img;
 	private Image baseImg;

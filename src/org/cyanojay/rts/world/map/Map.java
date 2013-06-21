@@ -89,6 +89,7 @@ public class Map {
 		
 		Terrain.IMG_HEIGHT = terrainImgs.get(0).get(0).getHeight(null); // choose the first image arbitrarily to set as the 
 		Terrain.IMG_WIDTH = terrainImgs.get(0).get(0).getWidth(null);   // Terrain Img_height/width field, because it remains constant
+		Terrain.AVOID_RADIUS = 64f;//(float) Math.sqrt(2f)*Terrain.IMG_WIDTH + 32f;
 		
 		for(int row = 0; row < mapArray.length; row++) {
 			for(int col = 0; col < mapArray[row].length; col++) {

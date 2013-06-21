@@ -9,8 +9,21 @@ public class Vmath {
 		return (float) Math.sqrt(v.x * v.x + v.y * v.y);
 	}
 	
-	public static float angle(Vector2f u, Vector2f v) {
+	public static float getAngle(Vector2f u, Vector2f v) {
 		return (float) Math.acos(dot(normalize(u),normalize(v)));
+	}
+	
+	public static Vector2f setAngle(Vector2f u, float value) {
+		float len = len(u);
+		return new Vector2f((float)Math.cos(value) * len, (float)Math.sin(value) * len);
+	}
+	
+	public static float sign(Vector2f u) {
+		return (Vmath.dot(u, getPerpendicular(u)) < 0) ? -1 : 1;
+	}
+	
+	public static Vector2f getPerpendicular(Vector2f u) {
+		return new Vector2f(-u.y, u.x);
 	}
 	
 	public static Vector2f add(Vector2f u, Vector2f v) {

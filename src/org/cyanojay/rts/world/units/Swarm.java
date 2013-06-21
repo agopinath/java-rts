@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.cyanojay.rts.ai.PathFinder;
 import org.cyanojay.rts.ai.steering.FollowPath;
+import org.cyanojay.rts.ai.steering.ObstacleAvoidance;
 import org.cyanojay.rts.ai.steering.Pathway;
 import org.cyanojay.rts.ai.steering.Separation;
 import org.cyanojay.rts.ai.steering.SteeringManager;
@@ -62,8 +64,20 @@ public class Swarm implements Iterable<Soldier> {
 	
 	public void setOverallPath(Vector2f[] p) { // sets overall path to the destination
 		this.path = new Pathway(p);
-		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.75f);
-		steer.addBehavior(new Separation(this), 0.25f);
+		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 1.5f);
+		steer.addBehavior(new Separation(this), 0.2f);
+		
+		List<Terrain> toAvoid = new ArrayList<Terrain>();
+		for(int row = 0; row < map.getHeight(); row++) {
+			for(int col = 0; col < map.getWidth(); col++) {
+				if(GameUtil.isBlocked(map, row, col)) {
+					toAvoid.add(map.getTerrainAt(row, col));
+					Fl.og("[" + row + ", " + col +"]");
+				}
+			}
+		}
+		
+		steer.addBehavior(new ObstacleAvoidance(toAvoid, Soldier.MAX_STEER), 0.05f);
 		
 		leader.setCurrPath(path);
 		for(Soldier s : units) {

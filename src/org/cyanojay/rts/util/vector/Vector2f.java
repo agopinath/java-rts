@@ -28,6 +28,16 @@ public class Vector2f implements Cloneable {
 		return Vmath.len(this);
 	}
 	
+	public float getAngle() {
+		return (float) Math.atan2(y, x);
+	}
+	
+	public void setAngle(float value) {
+		float len = len();
+		x = (float)Math.cos(value) * len;
+		y = (float)Math.sin(value) * len;
+	}
+	
 	public Vector2f clone() {
 		return new Vector2f(this.x, this.y);
 	}
