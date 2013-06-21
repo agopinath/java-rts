@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.cyanojay.rts.ai.PathFinder;
+import org.cyanojay.rts.ai.TerrainNode;
 import org.cyanojay.rts.ai.steering.FollowPath;
 import org.cyanojay.rts.ai.steering.Pathway;
 import org.cyanojay.rts.ai.steering.Separation;
@@ -13,8 +14,9 @@ import org.cyanojay.rts.ai.steering.SteeringManager;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
-import org.cyanojay.rts.world.map.Map;
+import org.cyanojay.rts.world.map.PathfindingMap;
 import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.TerrainMap;
 import org.cyanojay.rts.world.map.TerrainType;
 import org.cyanojay.rts.world.map.Viewport;
 
@@ -22,17 +24,17 @@ import com.agopinath.lthelogutil.Fl;
 
 public class Swarm implements Iterable<Soldier> {
 	private Set<Soldier> units;
-	private Map map;
+	private PathfindingMap moveMap;
 	private Viewport vp;
 	private Pathway path;
 	private SteeringManager steer;
 	private Soldier leader;
 	
-	public Swarm(Map m) {
+	public Swarm(TerrainMap m) {
 		units = new HashSet<Soldier>();
 		steer = new SteeringManager();
-		map = m;
-		vp = map.getViewport();
+		vp = m.getViewport();
+		moveMap = m.getPathMap();
 		leader = null;
 	}
 
@@ -46,8 +48,8 @@ public class Swarm implements Iterable<Soldier> {
 	}
 	
 	public void findLeader(int mouseX, int mouseY) { // finds the leader of the swarm based on its proximity to dest
-		int[] destRowCol = map.screenToMap(mouseX, mouseY);
-		int[] locs = map.mapToScreen(destRowCol[0], destRowCol[1]);
+		int[] destRowCol = moveMap.screenToMap(mouseX, mouseY);
+		int[] locs = moveMap.mapToScreen(destRowCol[0], destRowCol[1]);
 		Vector2f dest = new Vector2f(locs[0], locs[1]);
 		float minDist = Float.MAX_VALUE;
 		
@@ -59,7 +61,7 @@ public class Swarm implements Iterable<Soldier> {
 		}
 	}
 	
-	public void setOverallPath(Vector2f[] p) { // sets overall path to the destination
+	public void setOverallPath(TerrainNode[] p) { // sets overall path to the destination
 		this.path = new Pathway(p);
 		steer.addBehavior(new FollowPath(20f, Soldier.MAX_STEER, 1, path), 0.75f);
 		steer.addBehavior(new Separation(this), 0.25f);
@@ -89,7 +91,7 @@ public class Swarm implements Iterable<Soldier> {
 		s.setPosition(Vmath.add(s.getPosition(), s.getVelocity()));
 		
 		if(s.atEndOfPath()) {
-			if(map.getTerrainAt(map.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y)).getType() == TerrainType.DIRT) {
+			if(moveMap.getBlockAt(moveMap.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y)).baseBlock.getType() == TerrainType.DIRT) {
 				Vector2f newVel = new Vector2f((float)Math.random(), (float)Math.random());
 				newVel = Vmath.setLength(newVel, Soldier.MOVE_SPEED);
 				s.setVelocity(newVel);
@@ -104,26 +106,29 @@ public class Swarm implements Iterable<Soldier> {
 
 	public void moveToDestination(int[] dest) {
 		if(leader == null) return;
-		int[] start = map.viewportToMap((int)leader.getPosition().x, (int)leader.getPosition().y);
-		Vector2f[] leaderPath = calcPath(start, dest);
+		int[] start = moveMap.viewportToMap((int)leader.getPosition().x, (int)leader.getPosition().y);
+		GameUtil.changeBright(moveMap.getBlockAt(start), moveMap, 1.4f);
+		GameUtil.changeBright(moveMap.getBlockAt(dest), moveMap, 1.4f);
+		//Fl.og("" + start[0] + " " + start[1]);
+		TerrainNode[] leaderPath = calcPath(start, dest);
 		if(leaderPath == null) return;
 		for(Soldier s : units) {
 			if(s.equals(leader)) continue;
-			int[] currStart = map.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y);
+			int[] currStart = moveMap.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y);
 			if(currStart[0] == start[0] && currStart[1] == start[1]) {
 				s.setCurrPath(path);
 				continue;
 			}
-			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1]);
+			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1].position);
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1);
 	
-			Vector2f[] soldierPath = null;
+			TerrainNode[] soldierPath = null;
 			if(d1 < d2) {
 				soldierPath = calcPath(currStart, dest);
 				s.setCurrPath(new Pathway(soldierPath));
 			} else {
-				int[] t1loc = map.viewportToMap((int)t1.x, (int)t1.y);
+				int[] t1loc = moveMap.viewportToMap((int)t1.x, (int)t1.y);
 				if(!t1loc.equals(currStart))
 					s.setCurrPath(new Pathway(calcPath(currStart, t1loc)));
 				else
@@ -134,31 +139,27 @@ public class Swarm implements Iterable<Soldier> {
 		setOverallPath(leaderPath);
 	}
 	
-	private Vector2f getNearbyPointOnPath(Soldier s, Vector2f[] leaderPath) {
+	private Vector2f getNearbyPointOnPath(Soldier s, TerrainNode[] leaderPath) {
 		Vector2f nearest = null;
 		float minDist = Float.MAX_VALUE;
-		for(Vector2f v : leaderPath) {
-			if(GameUtil.pathFinderHeuristic(s.getPosition(), v) < minDist) {
-				minDist = GameUtil.pathFinderHeuristic(s.getPosition(), v);
-				nearest = v;
+		for(TerrainNode node : leaderPath) {
+			if(GameUtil.pathFinderHeuristic(s.getPosition(), node.position) < minDist) {
+				minDist = GameUtil.pathFinderHeuristic(s.getPosition(), node.position);
+				nearest = node.position;
 			}
 		}
 	
 		return nearest;
 	}
 
-	private Vector2f[] calcPath(int[] startLoc, int[] destLoc) {
+	private TerrainNode[] calcPath(int[] startLoc, int[] destLoc) {
 		PathFinder finder = new PathFinder();
-		ArrayList<Terrain> pathList = finder.findPath(map.getTerrainAt(startLoc), map.getTerrainAt(destLoc), map);
+		ArrayList<TerrainNode> pathList = finder.findPath(moveMap.getBlockAt(startLoc), moveMap.getBlockAt(destLoc), moveMap);
 		if(pathList == null) return null;
-		Vector2f[] vPath = new Vector2f[pathList.size()];
 		for(int i = 0; i < pathList.size(); i++) {
-			Terrain t = pathList.get(i);
-			
-			vPath[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
-			GameUtil.changeBright(t, map, 1.4f);
+			GameUtil.changeBright(pathList.get(i), moveMap, 1.4f);
 		}
 		
-		return vPath;
+		return (TerrainNode[]) pathList.toArray();
 	}
 }

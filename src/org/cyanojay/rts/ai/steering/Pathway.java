@@ -1,5 +1,6 @@
 package org.cyanojay.rts.ai.steering;
 
+import org.cyanojay.rts.ai.TerrainNode;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
@@ -18,13 +19,13 @@ public class Pathway {
 	private int pathLength;
 	private long uid;
 	
-	public Pathway(Vector2f[] p) {
-		pathLength = p.length;
+	public Pathway(TerrainNode[] t) {
+		pathLength = t.length;
 		path = new Vector2f[pathLength];
 		normals = new Vector2f[pathLength];
 		lengths = new float[pathLength];
-		for(int i = 0; i < p.length; i++) {
-			path[i] = p[i];
+		for(int i = 0; i < pathLength; i++) {
+			path[i] = t[i].position;
 	        if (i > 0) {
 	            normals[i] = Vmath.sub(path[i], path[i-1]);
 	            lengths[i] = Vmath.len(normals[i]);

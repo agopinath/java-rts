@@ -1,15 +1,16 @@
 package org.cyanojay.rts.util;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.RescaleOp;
 
 import org.cyanojay.rts.ai.TerrainNode;
 import org.cyanojay.rts.util.vector.Vector2f;
-import org.cyanojay.rts.world.map.Map;
-import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.GameMap;
+import org.cyanojay.rts.world.map.PathfindingMap;
 import org.cyanojay.rts.world.map.TerrainType;
-import org.cyanojay.rts.world.map.Viewport;
-import org.cyanojay.rts.world.units.Soldier;
+
+import com.agopinath.lthelogutil.Fl;
 
 
 public class GameUtil {
@@ -57,47 +58,17 @@ public class GameUtil {
 		return LATERAL_COST * (dx + dy) + (DIAGONAL_COST - 2f*LATERAL_COST) * Math.min(dx, dy);
 	}
 	
-	public static Terrain[] calcSurroundings(int[] rowAndCol, Map map) {
-		Terrain[] surround = new Terrain[9];
-		int cenRow = 0;
-		int cenCol = 0;
-		cenRow = rowAndCol[0];
-		cenCol = rowAndCol[1];
-		
-		/*surround[0][0] = map.getTerrainAt(cenRow-1, cenCol-1);
-		surround[0][1] = map.getTerrainAt(cenRow-1, cenCol);
-		surround[0][2] = map.getTerrainAt(cenRow-1, cenCol+1);
-		surround[1][0] = map.getTerrainAt(cenRow, cenCol-1);
-		surround[1][1] = map.getTerrainAt(cenRow, cenCol);
-		surround[1][2] = map.getTerrainAt(cenRow, cenCol+1);
-		surround[2][0] = map.getTerrainAt(cenRow+1, cenCol-1);
-		surround[2][1] = map.getTerrainAt(cenRow+1, cenCol);
-		surround[2][2] = map.getTerrainAt(cenRow+1, cenCol+1);*/
-
-		surround[0] = map.getTerrainAt(cenRow-1, cenCol-1);
-		surround[1] = map.getTerrainAt(cenRow-1, cenCol);
-		surround[2] = map.getTerrainAt(cenRow-1, cenCol+1);
-		surround[3] = map.getTerrainAt(cenRow, cenCol-1);
-		surround[4] = map.getTerrainAt(cenRow, cenCol);
-		surround[5] = map.getTerrainAt(cenRow, cenCol+1);
-		surround[6] = map.getTerrainAt(cenRow+1, cenCol-1);
-		surround[7] = map.getTerrainAt(cenRow+1, cenCol);
-		surround[8] = map.getTerrainAt(cenRow+1, cenCol+1);
-		
-		return surround;
-	}
-	
 	public static boolean isBlocked(TerrainNode neighbor) {
 		return neighbor.baseBlock.getType() == TerrainType.DIRT;
 		//return false;
 	}
 	
-	public static boolean isBlocked(Map m, int row, int col) {
-		return m.getTerrainAt(row, col).getType() == TerrainType.DIRT;
+	public static boolean isBlocked(GameMap m, int row, int col) {
+		return ((TerrainNode) m.getBlockAt(row, col)).baseBlock.getType() == TerrainType.DIRT;
 		//return false;
 	}
 
-	public static boolean isValidLocation(Map m, int sx, int sy, int x, int y, boolean cutCorners) {
+	public static boolean isValidLocation(GameMap m, int sx, int sy, int x, int y, boolean cutCorners) {
 		boolean invalid = false;
 
 		if ((!invalid) && ((sx != x) || (sy != y))) {
@@ -116,14 +87,21 @@ public class GameUtil {
 		return !invalid;
 	}
 	 
-	public static void changeBright(Terrain terr, Map map, float factor) {
-		BufferedImage img = (BufferedImage) terr.getImage();
-		BufferedImage dest = GameUtil.deepCopy(img);
+	public static void changeBright(TerrainNode terr, PathfindingMap map, float factor) {
+		Fl.og("B " + terr.baseBlock.getRow() + " -- " + terr.baseBlock.getCol());
+		Fl.og("[" + terr.row + ", " + terr.col + "]");
+		BufferedImage img = (BufferedImage) terr.baseBlock.getImage();
+		img = GameUtil.deepCopy(img);
+		Graphics2D g2 = img.createGraphics();
+		Vector2f pos = terr.position;
+		g2.setColor(Color.RED);
+		g2.fillRect((int)pos.x-terr.baseBlock.getX(), (int)pos.y-terr.baseBlock.getY(), 8, 8);
+		/*
 		RescaleOp rescaleOp = new RescaleOp(factor, 15, null);
 
-		rescaleOp.filter(img, dest);
-
-		terr.setImage(dest);
+		rescaleOp.filter(img, dest);*/
+		//Fl.og("Changing");
+		terr.baseBlock.setImage(img);
 	}
 	
 	private static long curUID = 0;

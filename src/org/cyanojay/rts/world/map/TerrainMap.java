@@ -1,4 +1,6 @@
 package org.cyanojay.rts.world.map;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.File;
@@ -10,21 +12,23 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
+import org.cyanojay.rts.ai.TerrainNode;
+
 import com.agopinath.lthelogutil.Fl;
 
 
-public class Map {
+public class TerrainMap extends GameMap {
 	private Terrain[][] mapArray;
 	private Viewport vp;
 	private List<List<Image>> terrainImgs;
 	private PathfindingMap pathMap;
 	
-	public Map(File mapFile, File[] assetsDir) {
+	public TerrainMap(File mapFile, File[] assetsDir) {
 		loadMapArray(mapFile);
 		loadAssets(assetsDir);
 		assignAssets();
 		
-		pathMap = new PathfindingMap(this);
+		setPathMap(new PathfindingMap(this));
 	}
 	
 	private void loadMapArray(File mapFile) {
@@ -126,23 +130,20 @@ public class Map {
 		}
 	}
 	
+	BasicStroke norm = new BasicStroke(2f);
 	public void draw(Graphics2D g) {
+		g.setColor(Color.green);
+		//g.setStroke(norm);
 		for(int row = vp.getTopLRow(); row <= vp.getBotRRow(); row++) {
 			for(int col = vp.getTopLCol(); col <= vp.getBotRCol(); col++) {
 				mapArray[row][col].draw(g, vp.getOffsetX(), vp.getOffsetY());
+				//g.drawRect(col*Terrain.IMG_WIDTH, row*Terrain.IMG_HEIGHT, Terrain.IMG_WIDTH, Terrain.IMG_HEIGHT);
 			}
 		}
 	}
 	
-	public Terrain getTerrainAt(int row, int col) {
-		if(row < 0 || col < 0 || row > mapArray.length || col > mapArray.length)
-			return null;
-		
-		return mapArray[row][col];
-	}
-	
-	public Terrain getTerrainAt(int[] rowcol) {
-		return getTerrainAt(rowcol[0], rowcol[1]);
+	public Terrain getBlockAt(int[] rowcol) {
+		return getBlockAt(rowcol[0], rowcol[1]);
 	}
 	
 	public void setViewport(Viewport vp) {
@@ -186,5 +187,40 @@ public class Map {
 	
 	public Viewport getViewport() {
 		return vp;
+	}
+
+	
+	@Override
+	public Terrain[] getSurroundings(int row, int col) {
+		Terrain[] surroundings = new Terrain[9];
+		
+		surroundings[0] = getBlockAt(row-1, col-1);
+		surroundings[1] = getBlockAt(row-1, col);
+		surroundings[2] = getBlockAt(row-1, col+1);
+		surroundings[3] = getBlockAt(row, col-1);
+		surroundings[4] = getBlockAt(row, col);
+		surroundings[5] = getBlockAt(row, col+1);
+		surroundings[6] = getBlockAt(row+1, col-1);
+		surroundings[7] = getBlockAt(row+1, col);
+		surroundings[8] = getBlockAt(row+1, col+1);
+		
+		return surroundings;
+	}
+	
+
+	@Override
+	public Terrain getBlockAt(int row, int col) {
+		if(row < 0 || col < 0 || row > mapArray.length || col > mapArray.length)
+			return null;
+		
+		return mapArray[row][col];
+	}
+
+	public PathfindingMap getPathMap() {
+		return pathMap;
+	}
+
+	public void setPathMap(PathfindingMap pathMap) {
+		this.pathMap = pathMap;
 	}
 }

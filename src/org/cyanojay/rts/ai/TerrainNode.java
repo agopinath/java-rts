@@ -1,32 +1,30 @@
 package org.cyanojay.rts.ai;
 
+import org.cyanojay.rts.util.GameUtil;
+import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.world.map.Terrain;
 
-public class TerrainNode implements Comparable<TerrainNode> {
-	public float g_score, f_score;
+public class TerrainNode {
 	public Terrain baseBlock;
+	public Vector2f position;
+	public int row, col;
+	public int size;
+	long uid;
 	
-	public TerrainNode(Terrain block) {
+	public TerrainNode(Terrain block, int row, int col, Vector2f position, int size) {
 		this.baseBlock = block;
+		this.row = row;
+		this.col = col;
+		this.position = position; 
+		this.size = size;
+		this.uid = GameUtil.getUID();
 	}
-	
-	public TerrainNode() {
-		
-	}
-
-	public boolean equals(Object other) {
-		return baseBlock.equals(((TerrainNode) other).baseBlock);
-	}
-
-	public int hashCode() {
-		return baseBlock.getType().hashCode();//baseBlock.getRow();
-	}
-	
-    public int compareTo(TerrainNode otherNode) {
-        return (int) (this.f_score - otherNode.f_score);
-    }
     
+    public TransientTerrainNode toTransient() {
+    	return new TransientTerrainNode(this);
+    }
+
     public String toString() {
-    	return "[" + baseBlock.getRow() + ", " + baseBlock.getCol() + "]";
+    	return "[" + row + ", " + col + "]";
     }
 }

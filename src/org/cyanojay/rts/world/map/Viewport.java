@@ -1,17 +1,27 @@
 package org.cyanojay.rts.world.map;
 
 public class Viewport {
-	private Map wholeMap;
+	private TerrainMap wholeMap;
 	
 	// respectively: top left row, top left column, bottom right row, bottom right column
 	public int topLRow, topLCol, botRRow, botRCol; 
+	public final int vpWidth, vpHeight;
 	
-	public Viewport(Map m, int tlr, int tlc, int brr, int brc) {
+	public Viewport(TerrainMap m, int tlr, int tlc, int brr, int brc, int vpW, int vpH) {
 		wholeMap = m;
 		topLRow = tlr;
 		topLCol = tlc;
-		botRRow = brr;
-		botRCol = brc;
+		if(brc <= wholeMap.getHeight()-1)
+			botRRow = brr;
+		else
+			botRRow = wholeMap.getHeight()-1;
+		if(brc <= wholeMap.getWidth()-1)
+			botRCol = brc;
+		else
+			botRCol = wholeMap.getWidth()-1;
+		
+		vpWidth = vpW;
+		vpHeight = vpH;
 	}
 
 	public int getTopLRow() {

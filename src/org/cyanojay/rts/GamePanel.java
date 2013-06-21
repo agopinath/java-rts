@@ -9,16 +9,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.cyanojay.rts.ai.PathFinder;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
-import org.cyanojay.rts.world.map.Map;
-import org.cyanojay.rts.world.map.Terrain;
+import org.cyanojay.rts.world.map.PathfindingMap;
+import org.cyanojay.rts.world.map.TerrainMap;
 import org.cyanojay.rts.world.map.Viewport;
 import org.cyanojay.rts.world.units.Soldier;
 import org.cyanojay.rts.world.units.Swarm;
@@ -26,7 +24,8 @@ import org.cyanojay.rts.world.units.Swarm;
 import com.agopinath.lthelogutil.Fl;
 
 public class GamePanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
-	private Map map;
+	private TerrainMap map;
+	private PathfindingMap moveMap;
 	private Viewport vp;
 	private Swarm swarm;
 	private Vector2f[] path;
@@ -41,7 +40,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 		File[] mapAssets = new File[] {
 			new File("assets/tiles/grass/"), new File("assets/tiles/dirt/")
 		};
-		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
+		map = new TerrainMap(new File("assets/maps/terrain3.txt"), mapAssets);
 		
 		Thread gameLoop = new Thread(new GameLoop());
 		gameLoop.start();
@@ -50,13 +49,14 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	public void initPostAdd() { // to be called by parent container after it has been added
 		initViewport();
 		map.setViewport(vp);
+		moveMap = map.getPathMap();
 		initEntities();
 	}
 	
 	public void initViewport() {
 		Dimension viewArea = getPreferredSize();
 		int[] rowcol = map.screenToMap(0 + viewArea.width, 0 + viewArea.height); // get row/col of bottom right corner of viewport
-		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1]);
+		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1], viewArea.width, viewArea.height);
 		
 		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
 	}
@@ -142,6 +142,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	
 	private void drawMap(Graphics2D g) {
 		map.draw(g);
+		//map.getPathMap().draw(g);
 	}
 	
 	private void drawEntities(Graphics2D g) {
@@ -180,6 +181,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 				map.resetMap();
 				drawPath = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				System.exit(0);
+				break;
 		}
 		
 		Fl.og(vp.getOffsetX() + " " + vp.getOffsetY());
@@ -200,7 +204,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					map.resetMap();
 					
 					swarm.findLeader(e.getX(), e.getY());
-					int[] dest = map.screenToMap(e.getX(), e.getY());
+					int[] dest = moveMap.screenToMap(e.getX(), e.getY());
+					//GameUtil.changeBright(moveMap.getBlockAt(dest), moveMap, 1.4f);
 					swarm.moveToDestination(dest);
 					
 					paintImmediately(0, 0, getWidth(), getHeight());

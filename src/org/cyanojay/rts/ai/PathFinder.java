@@ -8,7 +8,7 @@ import java.util.PriorityQueue;
 import javax.swing.JComponent;
 
 import org.cyanojay.rts.util.GameUtil;
-import org.cyanojay.rts.world.map.Map;
+import org.cyanojay.rts.world.map.PathfindingMap;
 import org.cyanojay.rts.world.map.Terrain;
 
 import com.agopinath.lthelogutil.Fl;
@@ -16,18 +16,19 @@ import com.agopinath.lthelogutil.Fl;
 
 
 public class PathFinder {
-	private ArrayList<Terrain> pathData;
-	private PriorityQueue<TerrainNode> openSet;
-	private HashSet<TerrainNode> closedSet;
-	private HashMap<TerrainNode, TerrainNode> cameFrom;
+	private ArrayList<TerrainNode> pathData;
+	private PriorityQueue<TransientTerrainNode> openSet;
+	private HashSet<TransientTerrainNode> closedSet;
+	private HashMap<TransientTerrainNode, TransientTerrainNode> cameFrom;
+	
 	private TerrainNode startNode, goalNode;
     private JComponent pane;
     
 	public PathFinder(JComponent pane) {
-        pathData = new ArrayList<Terrain>();
-		openSet = new PriorityQueue<TerrainNode>();
-		closedSet = new HashSet<TerrainNode>();
-		cameFrom = new HashMap<TerrainNode, TerrainNode>();
+        pathData = new ArrayList<TerrainNode>();
+		openSet = new PriorityQueue<TransientTerrainNode>();
+		closedSet = new HashSet<TransientTerrainNode>();
+		cameFrom = new HashMap<TransientTerrainNode, TransientTerrainNode>();
 		this.pane = pane;
 	}
 	
@@ -35,33 +36,25 @@ public class PathFinder {
 		this(null);
 	}
 	
-	public ArrayList<Terrain> getMovePath(int[] startLoc, int[] destLoc, Map map) {
-		if(startLoc.equals(destLoc)) return null;
-		Terrain start = map.getTerrainAt(startLoc[0],startLoc[1]);
-		Terrain dest = map.getTerrainAt(destLoc[0], destLoc[1]);
-		return findPath(start, dest, map);
-	}
-	
-	public ArrayList<Terrain> findPath(Terrain start, Terrain goal, Map map) {
-		if(start.equals(goal)) {
+	public ArrayList<TerrainNode> findPath(TerrainNode start, TerrainNode goal, PathfindingMap map) {
+		/*if(start.equals(goal)) {
 			Fl.err("Start == goal");
 			return null;
-		}
-		pathData = new ArrayList<Terrain>();
+		}*/
+		pathData = new ArrayList<TerrainNode>();
 		
-		closedSet = new HashSet<TerrainNode>();
-		openSet = new PriorityQueue<TerrainNode>();
-		cameFrom = new HashMap<TerrainNode, TerrainNode>();
+		closedSet = new HashSet<TransientTerrainNode>();
+		openSet = new PriorityQueue<TransientTerrainNode>();
+		cameFrom = new HashMap<TransientTerrainNode, TransientTerrainNode>();
 		
-		startNode = new TerrainNode(start);
-		goalNode = new TerrainNode(goal);
-
+		TransientTerrainNode startNode = start.toTransient();
+		TransientTerrainNode goalNode = goal.toTransient();
 		startNode.g_score = 0;
-		startNode.f_score = startNode.g_score + GameUtil.pathFinderHeuristic(startNode, goalNode);
+		startNode.f_score = startNode.g_score + GameUtil.pathFinderHeuristic(start, goal);
 		openSet.offer(startNode);
-		//cameFrom.put(startNode, null);
-		TerrainNode lastNode = null;
-		TerrainNode current = startNode;
+		
+		TransientTerrainNode lastNode = null;
+		TransientTerrainNode current = startNode;
 		
 		while(!openSet.isEmpty()) {
 			lastNode = current;
@@ -74,18 +67,16 @@ public class PathFinder {
 			
 			openSet.remove(current);		
 			closedSet.add(current);
-			Terrain[] surroundings = GameUtil.calcSurroundings(new int[] {current.baseBlock.getRow(), current.baseBlock.getCol()}, map);
-			TerrainNode neighbor = null;
+			TerrainNode[] surroundings = map.getSurroundings(current.parent.row, current.parent.col);
 			
 			int idx = 0;
 			float moveCostToNeighbor;
-			for(Terrain neighborT : surroundings) {
-				if(neighborT == null) continue;
-				
-				neighbor = new TerrainNode(neighborT);
+			for(TerrainNode neighbor : surroundings) {
+				if(neighbor == null) continue;
+				TransientTerrainNode ttnode = neighbor.toTransient();
 				if(closedSet.contains(neighbor) || GameUtil.isBlocked(neighbor) || 
-					!GameUtil.isValidLocation(map, current.baseBlock.getRow(), current.baseBlock.getCol(), 
-					neighborT.getRow(), neighborT.getCol(), false)) continue;
+					!GameUtil.isValidLocation(map, current.parent.row, current.parent.col, 
+					neighbor.row, neighbor.col, false)) continue;
 					
 				if(idx == 0 || idx == 2 || idx == 6 || idx == 8) { // assign movement cost according to position
 					moveCostToNeighbor = 14.14f;				   // of neighbor node relative to current node
@@ -94,13 +85,14 @@ public class PathFinder {
 				}
 				
 				float tentativeGScore = current.g_score + moveCostToNeighbor;
-				if (!openSet.contains(neighbor)|| tentativeGScore < neighbor.g_score) {
-					cameFrom.put(neighbor, current);
-					neighbor.g_score = tentativeGScore;
-					neighbor.f_score = neighbor.g_score + GameUtil.pathFinderHeuristic(neighbor, goalNode);
-					if(!openSet.contains(neighbor))
-						openSet.offer(neighbor);
+				if (!openSet.contains(neighbor)|| tentativeGScore < ttnode.g_score) {
+					cameFrom.put(ttnode, current);
+					ttnode.g_score = tentativeGScore;
+					ttnode.f_score = ttnode.g_score + GameUtil.pathFinderHeuristic(ttnode.parent, goalNode.parent);
+					if(!openSet.contains(ttnode))
+						openSet.offer(ttnode);
 				}
+				idx++;
 			}
 		}
 		
@@ -112,17 +104,12 @@ public class PathFinder {
 			pane.paintImmediately(0, 0, pane.getWidth(), pane.getHeight());       
 	}
 	
-	private ArrayList<Terrain> reconstructPath(HashMap<TerrainNode, TerrainNode> parents, TerrainNode goal) {
-		TerrainNode currNode = goal;
-		TerrainNode lastNode = currNode;
+	private ArrayList<TerrainNode> reconstructPath(HashMap<TransientTerrainNode, TransientTerrainNode> parents, TransientTerrainNode goal) {
+		TransientTerrainNode currNode = goal;
+		
 		while(currNode != null) {
-			pathData.add(currNode.baseBlock);
+			pathData.add(currNode.parent);
 			currNode = parents.get(currNode);
-			/*if(currNode != null && lastNode.equals(currNode)) {
-				Fl.og("Same: " + parents.get(currNode));
-				continue;
-			}
-			lastNode = currNode;*/
 		}
 		
 		Collections.reverse(pathData); // reverse the list because it is currently ordered from the goal to the start
