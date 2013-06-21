@@ -141,7 +141,7 @@ public class Swarm implements Iterable<Soldier> {
 			}
 			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1]);
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
-			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1);
+			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1) + GameUtil.pathFinderHeuristic(t1, leaderPath[leaderPath.length-1]);
 	
 			Vector2f[] soldierPath = null;
 			if(d1 < d2) {
