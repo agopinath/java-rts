@@ -97,6 +97,11 @@ public class GameUtil {
 		//return false;
 	}
 
+	public static boolean isBlocked(Map m, int[] rowcol) {
+		return m.getTerrainAt(rowcol[0], rowcol[1]).getType() == TerrainType.DIRT;
+		//return false;
+	}
+	
 	public static boolean isValidLocation(Map m, int sx, int sy, int x, int y, boolean cutCorners) {
 		boolean invalid = false;
 

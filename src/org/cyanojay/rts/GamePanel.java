@@ -201,6 +201,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 					
 					swarm.findLeader(e.getX(), e.getY());
 					int[] dest = map.screenToMap(e.getX(), e.getY());
+					if(GameUtil.isBlocked(map, dest)) return;
 					swarm.moveToDestination(dest);
 					
 					paintImmediately(0, 0, getWidth(), getHeight());
