@@ -98,6 +98,8 @@ public class Swarm implements Iterable<Soldier> {
 			}
 			if(!s.getCurrPath().equals(path)) uniquePaths++;
 		}
+		
+		Fl.og(""+uniquePaths);
 	}
 	
 	private void updateUnit(Soldier s) {
@@ -142,7 +144,7 @@ public class Swarm implements Iterable<Soldier> {
 			float d1 = GameUtil.pathFinderHeuristic(s.getPosition(), leaderPath[leaderPath.length-1]);
 			Vector2f t1 = getNearbyPointOnPath(s, leaderPath);
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1) + GameUtil.pathFinderHeuristic(t1, leaderPath[leaderPath.length-1]);
-	
+			
 			Vector2f[] soldierPath = null;
 			if(d1 < d2) {
 				soldierPath = calcPath(currStart, dest);
@@ -181,7 +183,7 @@ public class Swarm implements Iterable<Soldier> {
 			Terrain t = pathList.get(i);
 			
 			vPath[i] = new Vector2f(t.getX()+Terrain.IMG_WIDTH/2, t.getY()+Terrain.IMG_HEIGHT/2);
-			//GameUtil.changeBright(t, map, 1.4f);
+			GameUtil.changeBright(t, map, 1.4f);
 		}
 		
 		return vPath;

@@ -43,7 +43,7 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 			new File("assets/tiles/grass/"), new File("assets/tiles/dirt/")
 		};
 		
-		map = new Map(new File("assets/maps/terrain3.txt"), mapAssets);
+		map = new Map(new File("assets/maps/terrain6.txt"), mapAssets);
 	}
 	
 	public void initPostAdd() { // to be called by parent container after it has been added
@@ -71,9 +71,9 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 	public void initEntities() {
 		swarm = new Swarm(map);
 		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
-		swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
-		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
-		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
+		//swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
+		//swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
+		//swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 	}
 	
 	private class GameLoop implements Runnable {

@@ -10,7 +10,7 @@ public class Terrain implements Drawable {
 	public static int IMG_WIDTH;
 	public static float AVOID_RADIUS;
 	
-	//private Image img;
+	private Image img;
 	private Image baseImg;
 	private TerrainType type;
 	private int x, y;
@@ -21,20 +21,20 @@ public class Terrain implements Drawable {
 		this.row = row;
 		this.col = col;
 		this.type = type;
-		//this.img = img;
+		this.img = img;
 	}
 
 	public void draw(Graphics2D g, int xOff, int yOff) {
-		g.drawImage(baseImg, x+xOff, y+yOff, null);
+		g.drawImage(img, x+xOff, y+yOff, null);
 	}
 
-	/*public Image getImage() {
+	public Image getImage() {
 		return img;
 	}
 
 	public void setImage(Image img) {
 		this.img = img;
-	}*/
+	}
 	
 	public Image getBaseImage() {
 		return baseImg;
@@ -42,7 +42,7 @@ public class Terrain implements Drawable {
 
 	public void setBaseImage(Image baseImg) {
 		this.baseImg = baseImg;
-		//setImage(baseImg);
+		setImage(baseImg);
 	}
 	
 	public TerrainType getType() {
