@@ -13,6 +13,7 @@ import org.cyanojay.rts.ai.steering.ObstacleAvoidance;
 import org.cyanojay.rts.ai.steering.Pathway;
 import org.cyanojay.rts.ai.steering.Separation;
 import org.cyanojay.rts.ai.steering.SteeringManager;
+import org.cyanojay.rts.ai.steering.SteeringType;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
@@ -46,6 +47,7 @@ public class Swarm implements Iterable<Soldier> {
 
 	public void add(Soldier soldier) {
 		units.add(soldier);
+		steer.addUnit(soldier);
 	}
 	
 	public void findLeader(int mouseX, int mouseY) { // finds the leader of the swarm based on its proximity to dest
@@ -72,7 +74,7 @@ public class Swarm implements Iterable<Soldier> {
 			for(int col = 0; col < map.getWidth(); col++) {
 				if(GameUtil.isBlocked(map, row, col)) {
 					toAvoid.add(map.getTerrainAt(row, col));
-					Fl.og("[" + row + ", " + col +"]");
+					//Fl.og("[" + row + ", " + col +"]");
 				}
 			}
 		}
@@ -99,11 +101,17 @@ public class Swarm implements Iterable<Soldier> {
 	}
 	
 	private void updateUnit(Soldier s) {
-		Vector2f steerForce = steer.steer(s.getPosition(), s.getVelocity(), s.getCurrPath());
+		if(!s.isNearPathEnd() && s.nearingEndOfPath()) {
+			//steer.removeBehavior(s, 0);
+			steer.setWeight(s, 1, 0.5f);			
+			s.setNearPathEnd(true);
+		}
+		
+		Vector2f steerForce = steer.steer(s, s.getPosition(), s.getVelocity(), s.getCurrPath());
 		s.setVelocity(Vmath.setLength(Vmath.add(s.getVelocity(), steerForce), Soldier.MOVE_SPEED));
 		s.setPosition(Vmath.add(s.getPosition(), s.getVelocity()));
 		
-		if(s.atEndOfPath()) {
+		 if(s.atEndOfPath()) {
 			if(map.getTerrainAt(map.viewportToMap((int)s.getPosition().x, (int)s.getPosition().y)).getType() == TerrainType.DIRT) {
 				Vector2f newVel = new Vector2f((float)Math.random(), (float)Math.random());
 				newVel = Vmath.setLength(newVel, Soldier.MOVE_SPEED);
@@ -114,6 +122,8 @@ public class Swarm implements Iterable<Soldier> {
 			} else {
 				s.setCurrPath(path);
 			}
+			
+			s.setNearPathEnd(false);
 		}
 	}
 

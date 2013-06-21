@@ -3,7 +3,7 @@ package org.cyanojay.rts.ai.steering;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
 
-public class Seek implements SteeringBehavior {
+public class Seek extends SteeringBehavior {
 	private final float steerSpeed;
 	private Vector2f target;
 	
@@ -27,5 +27,10 @@ public class Seek implements SteeringBehavior {
 
 	public void setTarget(Vector2f target) {
 		this.target = target;
+	}
+	
+	@Override
+	public SteeringType getSteerType() {
+		return SteeringType.SEEK;
 	}
 }

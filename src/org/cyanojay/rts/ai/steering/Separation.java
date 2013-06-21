@@ -7,8 +7,8 @@ import org.cyanojay.rts.world.units.Swarm;
 
 import com.agopinath.lthelogutil.Fl;
 
-public class Separation implements SteeringBehavior {
-	public static final float DESIRED_SEP = 48.0f;
+public class Separation extends SteeringBehavior {
+	public static final float DESIRED_SEP = 16.0f;
 	private Swarm swarm;
 	public Separation(Swarm swarm) {
 		this.swarm = swarm;
@@ -42,4 +42,9 @@ public class Separation implements SteeringBehavior {
 
 	    return steer;
 	  }
+	
+	@Override
+	public SteeringType getSteerType() {
+		return SteeringType.SEPARATION;
+	}
 }

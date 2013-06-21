@@ -5,7 +5,7 @@ import org.cyanojay.rts.util.vector.Vmath;
 
 import com.agopinath.lthelogutil.Fl;
 
-public class FollowPath implements SteeringBehavior {
+public class FollowPath extends SteeringBehavior {
 	public final static float PATH_RADIUS = 4f;
 	private final float predictionTime;
 	private final int direction;
@@ -48,5 +48,10 @@ public class FollowPath implements SteeringBehavior {
 	
 	private Vector2f getFuturePosition(Vector2f currPos, Vector2f currVelocity, float predictionTime) {
 		return Vmath.add(currPos, Vmath.mult(currVelocity, predictionTime));
+	}
+	
+	@Override
+	public SteeringType getSteerType() {
+		return SteeringType.FOLLOW_PATH;
 	}
 }

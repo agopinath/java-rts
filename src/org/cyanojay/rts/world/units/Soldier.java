@@ -18,7 +18,7 @@ public class Soldier implements Drawable {
 	public final static float MOVE_SPEED = 4f;
 	public final static float MAX_STEER = 2f;
 	public final static float SIZE = 12f;
-	//public final static float SLOWING_RAD = 3f*Terrain.IMG_HEIGHT;
+	public final static float SLOWING_RAD = 2f*Terrain.IMG_HEIGHT;
 	public final static float STOPPING_RAD = 0.5f*Terrain.IMG_HEIGHT;
 	
 	private Vector2f position;
@@ -28,6 +28,7 @@ public class Soldier implements Drawable {
 	private long uid;
 	private UnitState state;
 	private Pathway currPath;
+	private boolean nearPathEnd;
 	
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
@@ -90,10 +91,10 @@ public class Soldier implements Drawable {
 		this.currPath = currPath;
 	}
 	
-	/*public boolean nearingEndOfPath() {
+	public boolean nearingEndOfPath() {
 		if(currPath == null) return false;
 		return Vmath.distBetween(position, currPath.getPathVectorAt(currPath.getPathSize()-1)) < SLOWING_RAD;
-	}*/
+	}
 	
 	public boolean atEndOfPath() {
 		if(currPath == null) return false;
@@ -106,5 +107,13 @@ public class Soldier implements Drawable {
 	
 	public int hashCode() {
 		return (int) uid;
+	}
+
+	public boolean isNearPathEnd() {
+		return nearPathEnd;
+	}
+
+	public void setNearPathEnd(boolean nearPathEnd) {
+		this.nearPathEnd = nearPathEnd;
 	}
 }

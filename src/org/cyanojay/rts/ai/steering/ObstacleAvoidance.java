@@ -5,9 +5,8 @@ import java.util.List;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
 import org.cyanojay.rts.world.map.Terrain;
-import org.cyanojay.rts.world.units.Soldier;
 
-public class ObstacleAvoidance implements SteeringBehavior {
+public class ObstacleAvoidance extends SteeringBehavior {
 	private final static int CHECK_LENGTH = 64; // distance to look ahead
 	private List<Terrain> toAvoid;
 	private float maxSpeed;
@@ -43,4 +42,8 @@ public class ObstacleAvoidance implements SteeringBehavior {
 		return force;
 	}
 
+	@Override
+	public SteeringType getSteerType() {
+		return SteeringType.OBSTACLE_AVOIDANCE;
+	}
 }
