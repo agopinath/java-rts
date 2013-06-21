@@ -167,15 +167,19 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener, Mou
 	public void keyPressed(final KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_D:
 				vp.shiftHorizontally(1);
 				break;
 			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_A:
 				vp.shiftHorizontally(-1);
 				break;
 			case KeyEvent.VK_UP:
+			case KeyEvent.VK_W:
 				vp.shiftVertically(-1);
 				break;
 			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_S:
 				vp.shiftVertically(1);
 				break;
 			case KeyEvent.VK_F12:
