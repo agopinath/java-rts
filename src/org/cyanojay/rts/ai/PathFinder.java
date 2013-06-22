@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import javax.swing.JComponent;
@@ -127,6 +129,30 @@ public class PathFinder {
 		
 		Collections.reverse(pathData); // reverse the list because it is currently ordered from the goal to the start
 		
+		//smoothPath(pathData);
+		
 		return pathData;
+	}
+	
+	private void smoothPath(List<Terrain> path) {
+		if(path == null || path.size() < 2) return;
+		int idx = 0;
+		Terrain checkP = path.get(idx);
+		Terrain currP = path.get(idx+1);
+		while((idx+1) < path.size()) {
+			if(walkable(checkP, path.get(idx+2))) {
+				currP = path.get(idx+2);
+				path.remove(idx+1);
+			} else {
+				checkP = currP;
+				currP = path.get(idx+2);
+			}
+			idx++;
+		}
+	}
+
+	private boolean walkable(Terrain t1, Terrain t2) {
+		
+		return false;
 	}
 }
