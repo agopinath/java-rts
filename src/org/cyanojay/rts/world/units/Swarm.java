@@ -1,5 +1,6 @@
 package org.cyanojay.rts.world.units;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,7 +14,6 @@ import org.cyanojay.rts.ai.steering.ObstacleAvoidance;
 import org.cyanojay.rts.ai.steering.Pathway;
 import org.cyanojay.rts.ai.steering.Separation;
 import org.cyanojay.rts.ai.steering.SteeringManager;
-import org.cyanojay.rts.ai.steering.SteeringType;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
@@ -25,6 +25,8 @@ import org.cyanojay.rts.world.map.Viewport;
 import com.agopinath.lthelogutil.Fl;
 
 public class Swarm implements Iterable<Soldier> {
+	private static int THRESHOLD;
+	
 	private Set<Soldier> units;
 	private Map map;
 	private Viewport vp;
@@ -38,6 +40,10 @@ public class Swarm implements Iterable<Soldier> {
 		map = m;
 		vp = map.getViewport();
 		leader = null;
+		
+		Dimension d = vp.getViewportArea();
+		THRESHOLD = (int) Math.sqrt(d.width * d.width + d.height * d.height)/2;
+		Fl.og("Thresh: "+THRESHOLD);
 	}
 
 	@Override
@@ -146,7 +152,7 @@ public class Swarm implements Iterable<Soldier> {
 			float d2 = GameUtil.pathFinderHeuristic(s.getPosition(), t1) + GameUtil.pathFinderHeuristic(t1, leaderPath[leaderPath.length-1]);
 			
 			Vector2f[] soldierPath = null;
-			if(d1 < d2) {
+			if(d1 + THRESHOLD < d2) {
 				soldierPath = calcPath(currStart, dest);
 				s.setCurrPath(new Pathway(soldierPath));
 			} else {

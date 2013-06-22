@@ -1,17 +1,22 @@
 package org.cyanojay.rts.world.map;
 
+import java.awt.Dimension;
+
 public class Viewport {
 	private Map wholeMap;
+	private Dimension vpArea;
 	
 	// respectively: top left row, top left column, bottom right row, bottom right column
 	public int topLRow, topLCol, botRRow, botRCol; 
 	
-	public Viewport(Map m, int tlr, int tlc, int brr, int brc) {
+	public Viewport(Map m, int tlr, int tlc, int brr, int brc, Dimension viewportArea) {
 		wholeMap = m;
 		topLRow = tlr;
 		topLCol = tlc;
 		botRRow = brr;
 		botRCol = brc;
+		
+		vpArea = viewportArea;
 	}
 
 	public int getTopLRow() {
@@ -66,5 +71,9 @@ public class Viewport {
 	
 	public int getOffsetY() {
 		return -topLRow * Terrain.IMG_WIDTH;
+	}
+
+	public Dimension getViewportArea() {
+		return vpArea;
 	}
 }

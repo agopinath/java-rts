@@ -1,12 +1,8 @@
 package org.cyanojay.rts.world.units;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.util.Arrays;
-import java.util.Collections;
 
 import org.cyanojay.rts.ai.steering.Pathway;
-import org.cyanojay.rts.ai.steering.SteeringManager;
 import org.cyanojay.rts.util.GameUtil;
 import org.cyanojay.rts.util.vector.Vector2f;
 import org.cyanojay.rts.util.vector.Vmath;
@@ -24,10 +20,13 @@ public class Soldier implements Drawable {
 	private Vector2f position;
 	private Vector2f velocity;
 	private Color color;
-	private long uid;
 	private UnitState state;
 	private Pathway currPath;
+	private Sprite sprite;
+	
 	private boolean nearPathEnd;
+	private long uid;
+	private int currImgIdx;
 	
 	public Soldier(Vector2f pos, Color c) {
 		position = pos;
@@ -112,5 +111,13 @@ public class Soldier implements Drawable {
 
 	public void setNearPathEnd(boolean nearPathEnd) {
 		this.nearPathEnd = nearPathEnd;
+	}
+
+	public Sprite getSprite() {
+		return sprite;
+	}
+
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
 	}
 }

@@ -63,7 +63,7 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 	public void initViewport() {
 		Dimension viewArea = getSize();
 		int[] rowcol = map.screenToMap(0 + viewArea.width, 0 + viewArea.height); // get row/col of bottom right corner of viewport
-		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1]);
+		vp = new Viewport(map, 0, 0, rowcol[0], rowcol[1], viewArea);
 		
 		Fl.og("Viewarea edges: " + viewArea.width + ", " + viewArea.height);
 	}
@@ -71,9 +71,9 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 	public void initEntities() {
 		swarm = new Swarm(map);
 		swarm.add(new Soldier(new Vector2f(64, 64), Color.RED));
-		//swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
-		//swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
-		//swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
+		swarm.add(new Soldier(new Vector2f(128, 460), Color.GREEN));
+		swarm.add(new Soldier(new Vector2f(20, 198), Color.BLUE));
+		swarm.add(new Soldier(new Vector2f(512, 90), Color.YELLOW));
 	}
 	
 	private class GameLoop implements Runnable {
